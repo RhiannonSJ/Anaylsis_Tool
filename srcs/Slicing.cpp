@@ -1081,5 +1081,4 @@ namespace ana{
       delete leg_cos;
 
   }
-}
-#endif
+} // ana

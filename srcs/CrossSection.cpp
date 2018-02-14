@@ -175,4 +175,4 @@ namespace ana{
     // Set the total error contributions from flux and statistics
     SetFluxStatsErrors(unfold, xsec, norm);
   }
-}
+} // ana
