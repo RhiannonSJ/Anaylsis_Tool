@@ -10,18 +10,16 @@
 #include "../include/Particle.h"
 #include "../include/EventSelectionTool.h"
 
-using namespace ana{
-
-  typedef std::map< std::vector< int >, int > top_map; 
+namespace ana{
 
   // Cross section scaling calculation
-  double GetCrossSectionScale( TH2D *unfold, TH1D *flux );
+  float GetCrossSectionScale( TH2D *unfold, TH1D *flux );
 
   // Linearisation function
   void GetLinearisatedHistogram( TH2D *xsec, TH1D *linear);
 
   // Get covariance matrix
-  TMatrixDSym GetCovariance( TH1D *linear, double flux_err, const char file[1024] );
+  TMatrixDSym GetCovariance( TH1D *linear, float flux_err, const char file[1024] );
 
   // Set errors on the linear histogram
   void SetLinearErrors( TMatrixDSym covariance, TH1D *linear, const char file[1024] );
@@ -30,10 +28,10 @@ using namespace ana{
   void SetDDXSecErrors( TH1D *linear, TH2D *xsec, TMatrixDSym covariance );
 
   // Set total errors due to flux and statistics
-  void SetFluxStatsErrors( TH2D *unfold, TH2D *xsec, double norm );
+  void SetFluxStatsErrors( TH2D *unfold, TH2D *xsec, float norm );
 
   // Get errors using linearisation
-  void Set2DErrors( TH2D *xsec, TH2D *unfold, TH1D *linear, double flux_err, const char file[1024], double norm );
+  void Set2DErrors( TH2D *xsec, TH2D *unfold, TH1D *linear, float flux_err, const char file[1024], float norm );
 }
 #endif
 

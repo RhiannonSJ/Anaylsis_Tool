@@ -7,10 +7,6 @@
  * Date  : June 2017
  *
 */
-
-#ifndef COV_FUNC_CPP
-#define COV_FUNC_CPP
-
 #include "../include/CovFunc.h"
 
 namespace ana{
@@ -45,4 +41,3 @@ namespace ana{
 } // namespace
 
 // -------------------------------------------------------------------------
-#endif

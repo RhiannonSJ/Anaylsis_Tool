@@ -1,16 +1,13 @@
-#ifndef UNFOLDING_FUNCTIONS_CPP
-#define UNFOLDING_FUNCTIONS_CPP
-
 #include "../include/UnfoldingFunctions.h"
 #include "../include/EventSelectionTool.h"
 #include "../include/Event.h"
 #include "../include/Particle.h"
 
-using namespace ana{
+namespace ana{
 
-  void GetResponse( const EventList                  & event_list,
-                    const TopologyMap                & topology,
-                    RooUnfoldResponse                & response ) {
+  void GetResponse( const EventList   & event_list,
+                    const TopologyMap & topology,
+                    RooUnfoldResponse & response ) {
       
     for(unsigned int i = 0; i < event_list.size(); ++i) {
         
@@ -180,4 +177,3 @@ using namespace ana{
 
   }
 }
-#endif

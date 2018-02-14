@@ -13,16 +13,16 @@
 #include "../include/Particle.h"
 #include "../include/Event.h"
 
-using namespace ana{
+namespace ana{
 
   // Get the response matrix for the chosen topology
-  void GetResponse( const EventList                  & event_list,
-                    const TopologyMap                & topology,
-                    RooUnfoldResponse                & response );
+  void GetResponse( const EventList   & event_list,
+                    const TopologyMap & topology,
+                    RooUnfoldResponse & response );
                                
   // Get the true and reconstructed histograms
-  void GetTrueRecoHists( const EventList                  & event_list,
-                         const TopologyMap                & topology,
+  void GetTrueRecoHists( const EventList   & event_list,
+                         const TopologyMap & topology,
                          TH2D *true_hist,
                          TH2D *reco_hist );
 

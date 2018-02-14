@@ -2,10 +2,13 @@
 
 namespace ana{
   
-  Event::Event(const ParticleList &mc_particles, const ParticleList &reco_particles, const unsigned int nuance, const bool is_cc, const TVector3 &mc_vertex, const TVector3 &reco_vertex, const float neutrino_energy) :
+  Event::Event(const ParticleList &mc_particles, const ParticleList &reco_particles, const unsigned int nuance, const int neutrino_pdg, const unsigned int charged_pi, const unsigned int neutral_pi, const bool is_cc, const TVector3 &mc_vertex, const TVector3 &reco_vertex, const float neutrino_energy) :
     m_mc_particles(mc_particles),
     m_reco_particles(reco_particles),
     m_nuance(nuance),
+    m_nu_pdg(neutrino_pdg),
+    m_charged_pi(charged_pi),
+    m_neutral_pi(neutral_pi),
     m_is_cc(is_cc),
     m_mc_vertex(mc_vertex),
     m_reco_vertex(reco_vertex), 
@@ -82,6 +85,61 @@ namespace ana{
   
   }
 
+  //------------------------------------------------------------------------------------------ 
+  
+  int Event::GetNeutrinoPdgCode() const{
+  
+    return m_nu_pdg;
+
+  }
+
+  //------------------------------------------------------------------------------------------ 
+  
+  int Event::GetNChargedPions() const{
+  
+    return m_charged_pi;
+
+  }
+
+  //------------------------------------------------------------------------------------------ 
+  
+  int Event::GetNNeutralPions() const{
+  
+    return m_neutral_pi;
+
+  }
+  //------------------------------------------------------------------------------------------ 
+  
+  int Event::GetPhysicalProcess() const{
+
+    // QEL
+    if(m_nuance == 0 
+    || m_nuance == 1001 
+    || m_nuance == 1002) return 0;
+    // MEC
+    else if(m_nuance == 10) return 1;
+    // RES
+    else if(m_nuance == 1 
+         || m_nuance == 1003 
+         || m_nuance == 1004
+         || m_nuance == 1005
+         || m_nuance == 1006
+         || m_nuance == 1007
+         || m_nuance == 1008
+         || m_nuance == 1009
+         || m_nuance == 1010) return 2;
+    // DIS
+    else if(m_nuance == 2
+         || m_nuance == 1091) return 3;
+    // COH
+    else if(m_nuance == 1097) return 4;
+    // Non RES 1pi
+    else if(m_charged_pi + m_neutral_pi == 1) return 5;
+    // Other
+    else() return 6;
+  
+  }
+      
   //------------------------------------------------------------------------------------------ 
 
   bool Event::GetIsCC() const{
