@@ -1,7 +1,7 @@
 #ifndef ALL_CLASSES_CPP
 #define ALL_CLASSES_CPP
 
-#include "/hepstore/rjones/Exercises/RooUnfold_Kinematics/headers/all_class_headers.h"
+#include "../include/all_class_headers.h"
 
 namespace xsec{
 

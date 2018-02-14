@@ -5,7 +5,7 @@
 #include "TVector3.h"
 #include <map>
 
-namespace selection{
+namespace ana{
   
   // Typedef for the map
   typedef std::map< std::vector< int >, int > TopologyMap;
@@ -110,6 +110,20 @@ namespace selection{
        */
       float GetCC0piRecoNeutrinoEnergy(const Particle &particle) const;
 
+      /**
+       * @brief  Get the most energetic reconstructed particle
+       *
+       * @return Particle most energetic reco
+       */
+      Particle GetMostEnergeticRecoParticle() const;
+
+      /**
+       * @brief  Get the most energetic true particle
+       *
+       * @return Particle most energetic true
+       */
+      Particle GetMostEnergeticTrueParticle() const;
+
     private : 
 
       /**
@@ -130,6 +144,13 @@ namespace selection{
        */
       bool CheckTopology(const TopologyMap &topology, const ParticleList &particle_list) const;
 
+      /**
+       * @brief  Get the most energetic particle
+       *
+       * @return Particle most energetic
+       */
+      Particle GetMostEnergeticParticle(const ParticleList &particle_list) const;
+
       // Member variables
       ParticleList       m_mc_particles;       ///< vector of Monte Carlo particles
       ParticleList       m_reco_particles;     ///< vector of reconstructed particles
@@ -141,6 +162,6 @@ namespace selection{
 
 
   }; // Event
-} // Selection
+} // ana
 
 #endif

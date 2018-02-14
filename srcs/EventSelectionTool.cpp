@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace selection{
+namespace ana{
  
   void EventSelectionTool::LoadEventList(const std::string &file_name, EventList &event_list){
   
@@ -545,4 +545,4 @@ namespace selection{
     m_open_angle(open_angle),
     m_length(length) {}
 
-} // namespace: selection
+} // namespace: ana

@@ -1,6 +1,6 @@
 #include "../include/Event.h"
 
-namespace selection{
+namespace ana{
   
   Event::Event(const ParticleList &mc_particles, const ParticleList &reco_particles, const unsigned int nuance, const bool is_cc, const TVector3 &mc_vertex, const TVector3 &reco_vertex, const float neutrino_energy) :
     m_mc_particles(mc_particles),
@@ -39,6 +39,22 @@ namespace selection{
   bool Event::CheckRecoTopology(const TopologyMap &topology) const{
   
     return this->CheckTopology(topology, m_reco_particles);
+
+  }
+  
+  //------------------------------------------------------------------------------------------ 
+
+  Particle Event::GetMostEnergeticRecoParticle() const{
+ 
+    return this->GetMostEnergeticParticle(m_reco_particles);
+
+  }
+  
+  //------------------------------------------------------------------------------------------ 
+
+  Particle Event::GetMostEnergeticTrueParticle() const{
+ 
+    return this->GetMostEnergeticParticle(m_mc_particles);
 
   }
 
@@ -160,6 +176,20 @@ namespace selection{
     return reco;
   
   }
+  
+  Particle Event::GetMostEnergeticParticle(const ParticleList &particle_list) const{
 
+    float highest_energy   = -std::numeric_limits<float>::max();
+    unsigned int energy_id = std::numeric_limits<unsigned int >::max();
 
-} // Selection
+    for(int i = 0; i < particle_list.size(); ++i){
+    
+      if(!particle_list[i].GetHasCalorimetry()) continue;
+
+      if(particle_list[i].GetEnergy() > highest_energy) energy_id = i;
+    }
+
+    return particle_list[energy_id];
+
+  }
+} // ana

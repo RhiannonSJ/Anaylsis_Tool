@@ -4,7 +4,7 @@
 #include "TVector3.h"
 #include "../include/Particle.h"
 
-namespace selection{
+namespace ana{
 
   Particle::Particle(const int pdg, const float mass, const float energy, const TVector3 &vertex, const TVector3 &end, const TVector3 &momentum) : 
     m_pdg(pdg), 
@@ -96,11 +96,36 @@ namespace selection{
 
   //------------------------------------------------------------------------------------------ 
   
+  float Particle::GetKineticEnergy() const{
+  
+    if(!m_has_calorimetry) throw 1;
+    
+    return m_energy - m_mass;
+
+  }
+
+  //------------------------------------------------------------------------------------------ 
+  
   float Particle::GetLength() const{
   
     return m_length;
 
   }
+
+  //------------------------------------------------------------------------------------------ 
+  
+  float Particle::GetAngle() const{
+  
+    TVector3 z;
+    z[0] = 0;
+    z[1] = 0;
+    z[2] = 1;
+
+    float p    = m_momentum.Mag();
+    return ((1/p) * (m_momentum).Dot(z));
+    
+  }
+  
   //------------------------------------------------------------------------------------------ 
   
   TVector3 Particle::GetVertex() const{
@@ -135,4 +160,4 @@ namespace selection{
   
   }
     
-} // Selection
+} // ana
