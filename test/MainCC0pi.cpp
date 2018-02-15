@@ -43,7 +43,8 @@ int MainCC0pi(){
       exit(1);
   }
   else{
-      cout << "============================ SBND flux file open ==============================" << endl;
+  std::cout << "-----------------------------------------------------------" << std::endl;
+  std::cout << " SBND flux file open " << std::endl;
   }
 
   //==============================================================================
@@ -76,7 +77,6 @@ int MainCC0pi(){
       
     EventSelectionTool::LoadEventList(file_name, training_events);
   }
-  std::cout << "Training : " << training_events.size() << std::endl;
 
   for( unsigned int i = 198; i < 398; ++i ){
   
@@ -96,14 +96,7 @@ int MainCC0pi(){
       
     EventSelectionTool::LoadEventList(file_name, testing_events);
   }
-  
-  std::cout << "Testing : " << testing_events.size() << std::endl;
-  
-  // Define the chosen signal and background interactions 
-  // For the purpose of testing, use 
-  //      signal: CC 0pi, N protons  
-  //      backgrounds: NC 1pi+
-  //                 : NC 1pi-
+ 
   // Maps
   TopologyMap signal_all;
   TopologyMap signal_1p;
@@ -135,7 +128,22 @@ int MainCC0pi(){
   signal_3p.insert( std::make_pair( mu, 1 ) );
   signal_3p.insert( std::make_pair( pi, 0 ) );
   signal_3p.insert( std::make_pair( p,  3 ) );
- 
+
+  unsigned int train_true = 0;
+  unsigned int train_reco = 0;
+  unsigned int test_true  = 0;
+  unsigned int test_reco  = 0;
+  
+  // Count how many training and tesing CC0pi events we have
+  for(unsigned int i = 0; i < training_events.size(); ++i){
+    if(training_events[i].CheckRecoTopology(signal_all)) train_reco++;
+    if(training_events[i].CheckMCTopology(signal_all))   train_true++;
+  }
+  for(unsigned int i = 0; i < testing_events.size(); ++i){
+    if(testing_events[i].CheckRecoTopology(signal_all)) test_reco++;
+    if(testing_events[i].CheckMCTopology(signal_all))   test_true++;
+  }
+
   // File path
   const char file_path[1024]  = "/hepstore/rjones/Exercises/Anaylsis_Tool/plots/CC0Pi/all_signal/";
   const char file_path1[1024] = "/hepstore/rjones/Exercises/Anaylsis_Tool/plots/CC0Pi/1_p/";
@@ -166,6 +174,16 @@ int MainCC0pi(){
   delete h_ddxsec_2p;
   delete h_ddxsec_3p;
   
+  std::cout << "-----------------------------------------------------------" << std::endl;
+  std::cout << " Total events for training : " << training_events.size()      << std::endl;
+  std::cout << " Total events for testing  : " << testing_events.size()       << std::endl;
+  std::cout << "-----------------------------------------------------------" << std::endl;
+  std::cout << " True CC 0Pi events train : " << train_true                  << std::endl;
+  std::cout << " True CC 0Pi events test  : " << test_true                   << std::endl;
+  std::cout << " Reco CC 0Pi events train : " << train_reco                  << std::endl;
+  std::cout << " Reco CC 0Pi events test  : " << test_reco                   << std::endl;
+  std::cout << "-----------------------------------------------------------" << std::endl;
+
   time_t rawtime_end;
   struct tm * timeinfo_end;
   time (&rawtime_end);
