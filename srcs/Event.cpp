@@ -240,7 +240,7 @@ namespace ana{
     float highest_energy   = -std::numeric_limits<float>::max();
     unsigned int energy_id = std::numeric_limits<unsigned int >::max();
 
-    for(int i = 0; i < particle_list.size(); ++i){
+    for(unsigned int i = 0; i < particle_list.size(); ++i){
     
       if(!particle_list[i].GetHasCalorimetry()) continue;
 
