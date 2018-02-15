@@ -37,12 +37,12 @@ namespace ana{
       // Fill the testing histograms
       GetTrueRecoHists( testing_events, topology, h_true_test, h_reco_test );
 
-      // Scaling factor for full POT for 6009 events
+      // Scaling factor for full POT for 3000 events (half of the full available sample
       // For now, averaged normalisations for 3 genie models
-      double scale_POT = 1100;
+      //double scale_POT = 2250;
       
-      h_true_test->Scale(scale_POT);
-      h_reco_test->Scale(scale_POT);
+      //h_true_test->Scale(scale_POT);
+      //h_reco_test->Scale(scale_POT);
       
       // Unfold 
       RooUnfoldBayes unfold( &response, h_reco_test, 1 );
