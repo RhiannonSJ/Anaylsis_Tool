@@ -18,7 +18,7 @@ namespace ana{
   void Slices ( TH2D *h_ddxsec, const char file[1024] );
 
   // Get the characterised slices
-  void Characterisation ( TH2D *h_smeared, ParticleList primary, EventList reco_events,  const char file_path[1024] );
+  void Characterisation ( TH2D *h_smeared, EventSelectionTool::ParticleList primary, EventSelectionTool::EventList reco_events,  const char file_path[1024] );
 
   // Slice up the different signal histograms and compare
   void SignalComparison( const std::vector< TH2D* > &vect_ddxsec, const char file_path[1024], std::vector< std::string > &names );

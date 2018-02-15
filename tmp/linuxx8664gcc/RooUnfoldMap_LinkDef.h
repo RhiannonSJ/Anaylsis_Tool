@@ -1,7 +1,7 @@
-# 1 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx"
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx"
 # 1 "<built-in>"
 # 1 "<command-line>"
-# 1 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx"
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx"
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TObject.h" 1
 # 31 "/hepstore/rjones/Software/ROOT/Install/include/root/TObject.h"
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/Rtypes.h" 1
@@ -15178,7 +15178,7 @@ template <class Tmpl> TBuffer &operator<<(TBuffer &buf, Tmpl *&obj);
 inline TBuffer &operator<<(TBuffer &buf, const TObject *obj)
    { buf.WriteObjectAny(obj, TObject::Class()); return buf; }
 # 233 "/hepstore/rjones/Software/ROOT/Install/include/root/TObject.h" 2
-# 2 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 2 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TMemberInspector.h" 1
 # 28 "/hepstore/rjones/Software/ROOT/Install/include/root/TMemberInspector.h"
 class TObject;
@@ -15221,11 +15221,11 @@ public:
 
    private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 0; } static void Dictionary(); virtual TClass *IsA() const { return TMemberInspector::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { TMemberInspector::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Software/ROOT/Install/include/root/TMemberInspector.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 66; }
 };
-# 3 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBasisSplines.h" 1
-# 16 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBasisSplines.h"
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfold.h" 1
-# 15 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfold.h"
+# 3 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBasisSplines.h" 1
+# 16 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBasisSplines.h"
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfold.h" 1
+# 15 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfold.h"
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TNamed.h" 1
 # 29 "/hepstore/rjones/Software/ROOT/Install/include/root/TNamed.h"
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TString.h" 1
@@ -18865,7 +18865,7 @@ public:
 
    private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return TNamed::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { TNamed::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Software/ROOT/Install/include/root/TNamed.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 62; }
 };
-# 16 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfold.h" 2
+# 16 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfold.h" 2
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TVectorD.h" 1
 # 21 "/hepstore/rjones/Software/ROOT/Install/include/root/TVectorD.h"
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TVectorT.h" 1
@@ -22099,11 +22099,11 @@ template<class Element> class TMatrixTSparse;
 typedef TMatrixTSparse<Double_t> TMatrixDSparse;
 # 28 "/hepstore/rjones/Software/ROOT/Install/include/root/TMatrixDSparse.h" 2
 # 34 "/hepstore/rjones/Software/ROOT/Install/include/root/TVectorD.h" 2
-# 17 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfold.h" 2
+# 17 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfold.h" 2
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TMatrixD.h" 1
-# 18 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfold.h" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldResponse.h" 1
-# 17 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldResponse.h"
+# 18 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfold.h" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldResponse.h" 1
+# 17 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldResponse.h"
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TH1.h" 1
 # 25 "/hepstore/rjones/Software/ROOT/Install/include/root/TH1.h"
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TAxis.h" 1
@@ -23474,10 +23474,10 @@ TH1D operator/(const TH1D &h1, const TH1D &h2);
 
    extern TH1 *R__H(Int_t hid);
    extern TH1 *R__H(const char *hname);
-# 18 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldResponse.h" 2
+# 18 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldResponse.h" 2
 
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TVectorDfwd.h" 1
-# 20 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldResponse.h" 2
+# 20 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldResponse.h" 2
 
 
 
@@ -23623,7 +23623,7 @@ private:
 
 public:
 
-  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldResponse::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldResponse::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldResponse.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 165; }
+  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldResponse::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldResponse::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldResponse.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 165; }
 };
 
 
@@ -23911,7 +23911,7 @@ Int_t RooUnfoldResponse::FindBin (const TH1* h, Double_t x)
 
   return h->GetXaxis()->FindBin(x) - 1;
 }
-# 19 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfold.h" 2
+# 19 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfold.h" 2
 
 class TH1;
 class TH1D;
@@ -24070,7 +24070,7 @@ protected:
 
 public:
 
-  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 2; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfold::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfold::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfold.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 177; }
+  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 2; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfold::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfold::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfold.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 177; }
 };
 
 
@@ -24224,7 +24224,7 @@ Int_t RooUnfold::SystematicsIncluded() const
 
   return _dosys;
 }
-# 17 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBasisSplines.h" 2
+# 17 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBasisSplines.h" 2
 
 class testHelperRooUnfoldBasisSplines;
 
@@ -24235,7 +24235,7 @@ class TH2D;
 
 
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TMatrixDSym.h" 1
-# 27 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBasisSplines.h" 2
+# 27 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBasisSplines.h" 2
 
 
 class RooUnfoldBasisSplines : public RooUnfold {
@@ -24332,12 +24332,12 @@ private:
   TMatrixDSym _vinv;
 
 public:
-  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldBasisSplines::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldBasisSplines::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBasisSplines.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 123; }
+  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldBasisSplines::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldBasisSplines::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBasisSplines.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 123; }
 
 };
-# 4 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBayes.h" 1
-# 20 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBayes.h"
+# 4 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBayes.h" 1
+# 20 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBayes.h"
 class TH1;
 class TH2;
 class RooUnfoldResponse;
@@ -24417,7 +24417,7 @@ protected:
   TMatrixD _dnCidPjk;
 
 public:
-  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldBayes::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldBayes::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBayes.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 99; }
+  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldBayes::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldBayes::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBayes.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 99; }
 };
 
 
@@ -24503,9 +24503,9 @@ Double_t RooUnfoldBayes::GetRegParm() const
 
   return GetIterations();
 }
-# 5 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBinByBin.h" 1
-# 18 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBinByBin.h"
+# 5 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBinByBin.h" 1
+# 18 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBinByBin.h"
 class RooUnfoldResponse;
 class TH1;
 class TH1D;
@@ -24535,7 +24535,7 @@ protected:
   TVectorD _factors;
 
 public:
-  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldBinByBin::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldBinByBin::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldBinByBin.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 47; }
+  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldBinByBin::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldBinByBin::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldBinByBin.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 47; }
 };
 
 
@@ -24570,9 +24570,9 @@ RooUnfoldBinByBin& RooUnfoldBinByBin::operator= (const RooUnfoldBinByBin& rhs)
   Assign(rhs);
   return *this;
 }
-# 6 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldErrors.h" 1
-# 17 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldErrors.h"
+# 6 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldErrors.h" 1
+# 17 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldErrors.h"
 class TH1;
 class RooUnfold;
 class TNtuple;
@@ -24604,13 +24604,13 @@ private:
 
 public:
 
-  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 0; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldErrors::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldErrors::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldErrors.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 48; }
+  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 0; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldErrors::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldErrors::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldErrors.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 48; }
 };
-# 7 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfold.h" 1
-# 8 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldInvert.h" 1
-# 19 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldInvert.h"
+# 7 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfold.h" 1
+# 8 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldInvert.h" 1
+# 19 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldInvert.h"
 class RooUnfoldResponse;
 class TH1;
 class TH1D;
@@ -24647,7 +24647,7 @@ protected:
   TMatrixD* _resinv;
 
 public:
-  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldInvert::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldInvert::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldInvert.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 55; }
+  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldInvert::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldInvert::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldInvert.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 55; }
 };
 
 
@@ -24683,9 +24683,9 @@ RooUnfoldInvert& RooUnfoldInvert::operator= (const RooUnfoldInvert& rhs)
   Assign(rhs);
   return *this;
 }
-# 9 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldParms.h" 1
-# 18 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldParms.h"
+# 9 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldParms.h" 1
+# 18 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldParms.h"
 class TH1;
 class RooUnfold;
 class TProfile;
@@ -24717,13 +24717,13 @@ class RooUnfoldParms : public TNamed {
     Double_t _minparm;
     Double_t _stepsizeparm;
 public:
-    private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 0; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldParms::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldParms::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldParms.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 49; }
+    private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 0; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldParms::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldParms::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldParms.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 49; }
 };
-# 10 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldResponse.h" 1
-# 11 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldSvd.h" 1
-# 20 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldSvd.h"
+# 10 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldResponse.h" 1
+# 11 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldSvd.h" 1
+# 20 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldSvd.h"
 class RooUnfoldResponse;
 class TH1;
 class TH1D;
@@ -24784,7 +24784,7 @@ protected:
   TH2D *_reshist, *_meascov;
 
 public:
-  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldSvd::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldSvd::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldSvd.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 80; }
+  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldSvd::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldSvd::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldSvd.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 80; }
 };
 
 
@@ -24859,9 +24859,9 @@ Double_t RooUnfoldSvd::GetRegParm() const
 
   return GetKterm();
 }
-# 12 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldTUnfold.h" 1
-# 16 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldTUnfold.h"
+# 12 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldTUnfold.h" 1
+# 16 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldTUnfold.h"
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TUnfold.h" 1
 # 85 "/hepstore/rjones/Software/ROOT/Install/include/root/TUnfold.h"
 # 1 "/hepstore/rjones/Software/ROOT/Install/include/root/TH1D.h" 1
@@ -34274,7 +34274,7 @@ public:
 
    private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 17; } static void Dictionary(); virtual TClass *IsA() const { return TUnfold::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { TUnfold::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Software/ROOT/Install/include/root/TUnfold.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 249; }
 };
-# 17 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldTUnfold.h" 2
+# 17 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldTUnfold.h" 2
 
 class RooUnfoldResponse;
 class TH1;
@@ -34332,7 +34332,7 @@ private:
 
 public:
 
-  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldTUnfold::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldTUnfold::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfoldTUnfold.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 74; }
+  private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 1; } static void Dictionary(); virtual TClass *IsA() const { return RooUnfoldTUnfold::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { RooUnfoldTUnfold::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfoldTUnfold.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 74; }
 };
 
 
@@ -34402,16 +34402,16 @@ TUnfold::ERegMode RooUnfoldTUnfold::GetRegMethod() const
 {
   return _reg_method;
 }
-# 13 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/TSVDUnfold_local.h" 1
-# 55 "/hepstore/rjones/Exercises/RooUnfold/src/TSVDUnfold_local.h"
+# 13 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/TSVDUnfold_local.h" 1
+# 55 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/TSVDUnfold_local.h"
 class TH1D;
 class TH2D;
 
 class TSVDUnfold_130729 : public TObject {
 
 public:
-# 69 "/hepstore/rjones/Exercises/RooUnfold/src/TSVDUnfold_local.h"
+# 69 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/TSVDUnfold_local.h"
    TSVDUnfold_130729( const TH1D* bdat, const TH1D* bini, const TH1D* xini, const TH2D* Adet );
    TSVDUnfold_130729( const TH1D* bdat, TH2D* Bcov, const TH1D* bini, const TH1D* xini, const TH2D* Adet );
    TSVDUnfold_130729( const TSVDUnfold_130729& other );
@@ -34506,10 +34506,10 @@ private:
    Bool_t fMatToyMode;
 
 
-   private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 0; } static void Dictionary(); virtual TClass *IsA() const { return TSVDUnfold_130729::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { TSVDUnfold_130729::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/RooUnfold/src/TSVDUnfold_local.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 163; }
+   private: static atomic_TClass_ptr fgIsA; public: static TClass *Class(); static const char *Class_Name(); static Version_t Class_Version() { return 0; } static void Dictionary(); virtual TClass *IsA() const { return TSVDUnfold_130729::Class(); } virtual void ShowMembers(TMemberInspector&); virtual void Streamer(TBuffer&); void StreamerNVirtual(TBuffer&ClassDef_StreamerNVirtual_b) { TSVDUnfold_130729::Streamer(ClassDef_StreamerNVirtual_b); } static const char *DeclFileName() { return "/hepstore/rjones/Exercises/Anaylsis_Tool/src/TSVDUnfold_local.h"; } static int ImplFileLine(); static const char *ImplFileName(); static int DeclFileLine() { return 163; }
 };
-# 14 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
-# 1 "/hepstore/rjones/Exercises/RooUnfold/src/RooUnfold_LinkDef.h" 1
+# 14 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 1 "/hepstore/rjones/Exercises/Anaylsis_Tool/src/RooUnfold_LinkDef.h" 1
 
 
 #pragma link off all globals;
@@ -34533,4 +34533,4 @@ private:
 
 
 #pragma link C++ class TSVDUnfold_130729+;
-# 14 "/hepstore/rjones/Exercises/RooUnfold/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2
+# 14 "/hepstore/rjones/Exercises/Anaylsis_Tool/tmp/linuxx8664gcc/RooUnfoldMap_LinkDef.cxx" 2

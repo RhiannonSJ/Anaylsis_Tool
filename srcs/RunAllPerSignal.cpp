@@ -15,8 +15,8 @@
 namespace ana{
 
   TH2D *RunAll( TH1D *h_flux,
-                const EventList   &training_events,
-                const EventList   &testing_events,
+                const EventSelectionTool::EventList   &training_events,
+                const EventSelectionTool::EventList   &testing_events,
                 const TopologyMap &topology, 
                 const char file_path[1024] ){
     
@@ -67,8 +67,8 @@ namespace ana{
       Slices( h_ddxsec, file_path );
 
       // Get the reconstructed event list
-      EventList    reco_events;
-      ParticleList primaries;
+      EventSelectionTool::EventList    reco_events;
+      EventSelectionTool::ParticleList primaries;
       
       GetRecoEventList( testing_events, topology, primaries, reco_events );
       Characterisation( h_reco_test, primaries, reco_events, file_path );

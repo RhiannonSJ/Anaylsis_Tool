@@ -10,7 +10,7 @@
 namespace ana{
  
   void EventSelectionTool::LoadEventList(const std::string &file_name, EventList &event_list){
-  
+ 
     TFile f(file_name.c_str());
     TTree *t_event    = (TTree*) f.Get("event_tree");
     TTree *t_particle = (TTree*) f.Get("particle_tree");
@@ -27,7 +27,7 @@ namespace ana{
     TBranch *b_t_charged_pions = t_event->GetBranch("t_charged_pions");
     TBranch *b_t_neutral_pions = t_event->GetBranch("t_neutral_pions");
     TBranch *b_t_vertex_energy = t_event->GetBranch("t_vertex_energy");
-      
+    
     unsigned int n_events = t_event->GetEntries();
 
     unsigned int start_tracks      = 0;
@@ -72,7 +72,7 @@ namespace ana{
       EventSelectionTool::GetRecoParticleFromTrack(tracks,             recoparticles);
       EventSelectionTool::GetRecoParticleFromShower(showers, r_vertex, recoparticles);
       
-      event_list.push_back(Event(mcparticles, recoparticles, nuance, iscc, t_vertex, r_vertex, neu_energy));
+      event_list.push_back(Event(mcparticles, recoparticles, nuance, neutrino_pdg, pions_ch, pions_neu, iscc, t_vertex, r_vertex, neu_energy));
 
       start_tracks      += tracks.size();
       start_showers     += showers.size();

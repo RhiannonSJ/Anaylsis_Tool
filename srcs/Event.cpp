@@ -136,7 +136,7 @@ namespace ana{
     // Non RES 1pi
     else if(m_charged_pi + m_neutral_pi == 1) return 5;
     // Other
-    else() return 6;
+    else return 6;
   
   }
       

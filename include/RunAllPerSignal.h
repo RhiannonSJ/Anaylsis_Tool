@@ -14,8 +14,8 @@
 namespace ana{
 
   TH2D *RunAll( TH1D *h_flux,
-                const EventList   &training_events,
-                const EventList   &testing_events,
+                const EventSelectionTool::EventList   &training_events,
+                const EventSelectionTool::EventList   &testing_events,
                 const TopologyMap &topology, 
                 const char file_path[1024] );
 }

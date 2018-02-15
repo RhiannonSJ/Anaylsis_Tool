@@ -332,7 +332,7 @@ namespace ana{
 
   }
 
-  void Characterisation ( TH2D *h_smeared, ParticleList primary, EventList reco_events,  const char file_path[1024] ){
+  void Characterisation ( TH2D *h_smeared, EventSelectionTool::ParticleList primary, EventSelectionTool::EventList reco_events,  const char file_path[1024] ){
 
       int n_entries  = reco_events.size();
 
@@ -355,27 +355,27 @@ namespace ana{
       //  Other        : 6
       for ( int i = 0; i < n_entries; ++i ){
       
-          if( reco_events[i].GetPhysicalProcess() == 0 ){
-              ++qel; 
-          }
-          else if( reco_events[i].GetPhysicalProcess() == 1 ){
-              ++mec; 
-          }
-          else if( reco_events[i].GetPhysicalProcess() == 2 ){
-              ++res; 
-          }
-          else if( reco_events[i].GetPhysicalProcess() == 3 ){
-              ++dis; 
-          }
-          else if( reco_events[i].GetPhysicalProcess() == 4 ){
-              ++coh; 
-          }
-          else if( reco_events[i].GetPhysicalProcess() == 5 ){
-              ++singlepi; 
-          }
-          else if( reco_events[i].GetPhysicalProcess() == 6 ){
-              ++other; 
-          }
+        if( reco_events[i].GetPhysicalProcess() == 0 ){
+          ++qel; 
+        }
+        else if( reco_events[i].GetPhysicalProcess() == 1 ){
+          ++mec; 
+        }
+        else if( reco_events[i].GetPhysicalProcess() == 2 ){
+          ++res; 
+        }
+        else if( reco_events[i].GetPhysicalProcess() == 3 ){
+          ++dis; 
+        }
+        else if( reco_events[i].GetPhysicalProcess() == 4 ){
+          ++coh; 
+        }
+        else if( reco_events[i].GetPhysicalProcess() == 5 ){
+          ++singlepi; 
+        }
+        else if( reco_events[i].GetPhysicalProcess() == 6 ){
+          ++other; 
+        }
       }
 
       std::cout << " QEL : " << qel << std::endl;

@@ -5,7 +5,7 @@
 
 namespace ana{
 
-  void GetResponse( const EventList   & event_list,
+  void GetResponse( const EventSelectionTool::EventList   & event_list,
                     const TopologyMap & topology,
                     RooUnfoldResponse & response ) {
       
@@ -14,38 +14,32 @@ namespace ana{
       // Temporary event for ease
       Event ev = event_list[i];
 
-      ParticleList true_list = ev.GetMCParticleList();
-      ParticleList reco_list = ev.GetRecoParticleList();
+      EventSelectionTool::ParticleList true_list = ev.GetMCParticleList();
+      EventSelectionTool::ParticleList reco_list = ev.GetRecoParticleList();
 
       if(ev.CheckMCTopology(topology)) {
      
         unsigned int true_particles = true_list.size();
-        Particle primary_true;
-        bool true_muon_found(false);
+        Particle primary_true = ev.GetMostEnergeticTrueParticle();
 
-        for(int j = 0; j < true_particles; ++j) {
+        for(unsigned int j = 0; j < true_particles; ++j) {
           if(true_list[j].GetPdgCode() == 13) {
             primary_true = true_list[j];
-            true_muon_found = true;
             break;
           }
         }
-        if(!true_muon_found) primary_true = ev.GetMostEnergeticTrueParticle();
         
         if(ev.CheckRecoTopology(topology)){
         
           unsigned int reco_particles = reco_list.size();
-          Particle primary_good;
-          bool good_muon_found(false);
+          Particle primary_good = ev.GetMostEnergeticRecoParticle();
 
-          for(int j = 0; j < reco_particles; ++j) {
+          for(unsigned int j = 0; j < reco_particles; ++j) {
             if(reco_list[j].GetPdgCode() == 13) {
               primary_good = reco_list[j];
-              good_muon_found = true;
               break;
             }
           }
-          if(!good_muon_found) primary_good = ev.GetMostEnergeticRecoParticle();
           
           // True and reconstructed therefore fill
           response.Fill(primary_good.GetAngle(), primary_good.GetKineticEnergy(), primary_true.GetAngle(), primary_true.GetKineticEnergy());
@@ -60,17 +54,14 @@ namespace ana{
         if(ev.CheckRecoTopology(topology)){
           
           unsigned int reco_particles = reco_list.size();
-          Particle primary_reco;
-          bool reco_muon_found(false);
+          Particle primary_reco = ev.GetMostEnergeticRecoParticle();
 
-          for(int j = 0; j < reco_particles; ++j) {
+          for(unsigned int j = 0; j < reco_particles; ++j) {
             if(reco_list[j].GetPdgCode() == 13) {
-              primary_reco = reco_list[j];
-              reco_muon_found = true;
+              Particle primary_reco = reco_list[j];
               break;
             }
           }
-          if(!reco_muon_found) primary_reco = ev.GetMostEnergeticRecoParticle();
          
           // Not true, reco therefore fake
           response.Fake(primary_reco.GetAngle(), primary_reco.GetKineticEnergy());
@@ -79,7 +70,7 @@ namespace ana{
     }
   } 
 
-  void GetTrueRecoHists( const EventList   & event_list,
+  void GetTrueRecoHists( const EventSelectionTool::EventList   & event_list,
                          const TopologyMap & topology,
                          TH2D *true_hist,
                          TH2D *reco_hist ) {
@@ -89,23 +80,20 @@ namespace ana{
       // Temporary event for ease
       Event ev = event_list[i];
 
-      ParticleList true_list = ev.GetMCParticleList();
-      ParticleList reco_list = ev.GetRecoParticleList();
+      EventSelectionTool::ParticleList true_list = ev.GetMCParticleList();
+      EventSelectionTool::ParticleList reco_list = ev.GetRecoParticleList();
       
       if(ev.CheckMCTopology(topology)) {
      
         unsigned int true_particles = true_list.size();
-        Particle primary_true;
-        bool true_muon_found(false);
+        Particle primary_true = ev.GetMostEnergeticTrueParticle();
 
-        for(int j = 0; j < true_particles; ++j) {
+        for(unsigned int j = 0; j < true_particles; ++j) {
           if(true_list[j].GetPdgCode() == 13) {
             primary_true = true_list[j];
-            true_muon_found = true;
             break;
           }
         }
-        if(!true_muon_found) primary_true = ev.GetMostEnergeticTrueParticle();
         
         // True
         true_hist->Fill(primary_true.GetAngle(), primary_true.GetKineticEnergy());
@@ -116,17 +104,14 @@ namespace ana{
         if(ev.CheckRecoTopology(topology)){
           
           unsigned int reco_particles = reco_list.size();
-          Particle primary_reco;
-          bool reco_muon_found(false);
+          Particle primary_reco = ev.GetMostEnergeticRecoParticle();
 
-          for(int j = 0; j < reco_particles; ++j) {
+          for(unsigned int j = 0; j < reco_particles; ++j) {
             if(reco_list[j].GetPdgCode() == 13) {
               primary_reco = reco_list[j];
-              reco_muon_found = true;
               break;
             }
           }
-          if(!reco_muon_found) primary_reco = ev.GetMostEnergeticRecoParticle();
          
           reco_hist->Fill(primary_reco.GetAngle(), primary_reco.GetKineticEnergy());
         }
@@ -134,30 +119,29 @@ namespace ana{
     }
   } 
 
-  void GetRecoEventList( const EventList   & event_list,
+  void GetRecoEventList( const EventSelectionTool::EventList   & event_list,
                          const TopologyMap & topology,
-                         ParticleList      & primary_list,
-                         EventList         & reco_event_list ) {
+                         EventSelectionTool::ParticleList      & primary_list,
+                         EventSelectionTool::EventList         & reco_event_list ) {
       
     for( unsigned int i = 0; i < event_list.size(); ++i ) {
         
       // Temporary event for ease
       Event ev = event_list[i];
 
+      EventSelectionTool::ParticleList reco_list = ev.GetRecoParticleList();
+      
       if(ev.CheckRecoTopology(topology)){
         
         unsigned int reco_particles = reco_list.size();
-        Particle primary_reco;
-        bool reco_muon_found(false);
+        Particle primary_reco = ev.GetMostEnergeticRecoParticle();
 
-        for(int j = 0; j < reco_particles; ++j) {
+        for(unsigned int j = 0; j < reco_particles; ++j) {
           if(reco_list[j].GetPdgCode() == 13) {
             primary_reco = reco_list[j];
-            reco_muon_found = true;
             break;
           }
         }
-        if(!reco_muon_found) primary_reco = ev.GetMostEnergeticRecoParticle();
         primary_list.push_back(primary_reco);
         reco_event_list.push_back(ev);
       }

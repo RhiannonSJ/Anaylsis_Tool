@@ -116,12 +116,14 @@ namespace ana{
   
   float Particle::GetAngle() const{
   
+    if(!m_has_calorimetry) throw 1;
+    
     TVector3 z;
     z[0] = 0;
     z[1] = 0;
     z[2] = 1;
 
-    float p    = m_momentum.Mag();
+    float p = m_momentum.Mag();
     return ((1/p) * (m_momentum).Dot(z));
     
   }
