@@ -3,13 +3,20 @@
 
 #include "Particle.h"
 #include "TVector3.h"
+#include "TLorentzVector.h"
+#include <fstream>
+#include <sstream>
+#include <iostream>
 #include <map>
+#include "TH1.h"
+#include "TF1.h"
 
 namespace ana{
   
   // Typedef for the map
   typedef std::map< std::vector< int >, int > TopologyMap;
   typedef std::vector<Particle> ParticleList;
+  typedef std::vector< vector<double> > ParticleMatrix;
 
   /**
    * @brief  Event class
@@ -17,6 +24,7 @@ namespace ana{
   class Event{
 
     public :
+    
 
       /**
        * @brief  Constructor
@@ -29,7 +37,7 @@ namespace ana{
        * @param  reco_vertex reconstructed neutrino vertex
        */
       Event(const ParticleList &mc_particles, const ParticleList &reco_particles, const unsigned int nuance, const int neutrino_pdg, const unsigned int charged_pi, const unsigned int neutral_pi, const bool is_cc, const TVector3 &mc_vertex, const TVector3 &reco_vertex, const float neutrino_energy);
-        
+
       /**
        * @brief  CountMCParticlesWithPdg
        *
@@ -97,6 +105,12 @@ namespace ana{
       int GetNNeutralPions() const;
       
       /**
+       * @brief  Get whether the true neutrino interaction happened within the SBND fiducial 
+       *         volume
+       */
+      bool IsSBNDTrueFiducial() const;
+      
+      /**
        * @brief  Get the physical process
        */
       int GetPhysicalProcess() const;
@@ -115,21 +129,12 @@ namespace ana{
        * @brief  Get the reconstructed neutrino vertex position
        */
       TVector3 GetRecoNuVertex() const;
-
+      
       /**
        * @brief  Get the true neutrino energy
        */
       float GetTrueNuEnergy() const;
-
-      /**
-       * @brief  Get the reconstructed neutrino energy for CC 0pi interactions
-       *
-       * @param  track muon track to use in the calculation
-       *
-       * @return float reconstructed neutrino energy 
-       */
-      float GetCC0piRecoNeutrinoEnergy(const Particle &particle) const;
-
+      
       /**
        * @brief  Get the most energetic reconstructed particle
        *
@@ -182,9 +187,18 @@ namespace ana{
       TVector3           m_reco_vertex;        ///< reconstructed neutrino vertex
       TVector3           m_mc_vertex;          ///< reconstructed neutrino vertex
       float              m_neutrino_energy;    ///< true neutrino energy
-
+      float              m_sbnd_border_x;      ///< fiducial border in x for the sbnd detector
+      float              m_sbnd_border_y;      ///< fiducial border in y for the sbnd detector
+      float              m_sbnd_border_z;      ///< fiducial border in z for the sbnd detector
+      float              m_sbnd_offset_x;      ///< offset in x for the sbnd detector
+      float              m_sbnd_offset_y;      ///< offset in y for the sbnd detector
+      float              m_sbnd_offset_z;      ///< offset in z for the sbnd detector
+      float              m_sbnd_half_length_x; ///< detector half length in x
+      float              m_sbnd_half_length_y; ///< detector half length in y
+      float              m_sbnd_half_length_z; ///< detector half length in z
+                                                                               
 
   }; // Event
-} // ana
+} // selection
 
 #endif

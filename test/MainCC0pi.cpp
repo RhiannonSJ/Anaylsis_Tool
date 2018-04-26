@@ -11,6 +11,9 @@
  * =============================================
  */
 
+#include "../include/CC1piAnalysisHelper.h"
+#include "../include/CC0piAnalysisHelper.h"
+#include "../include/GeneralAnalysisHelper.h"
 #include "../include/RooUnfoldHeaders.h"
 #include "../include/CovFunc.h"
 #include "../include/UnfoldingFunctions.h"

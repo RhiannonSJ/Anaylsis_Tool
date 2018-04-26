@@ -1,3 +1,6 @@
+#include "../include/CC0piAnalysisHelper.h"
+#include "../include/CC1piAnalysisHelper.h"
+#include "../include/GeneralAnalysisHelper.h"
 #include "../include/UnfoldingFunctions.h"
 #include "../include/EventSelectionTool.h"
 #include "../include/Event.h"

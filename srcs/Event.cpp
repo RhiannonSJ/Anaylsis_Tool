@@ -1,5 +1,5 @@
 #include "../include/Event.h"
-
+#include "../include/EventSelectionTool.h"
 namespace ana{
   
   Event::Event(const ParticleList &mc_particles, const ParticleList &reco_particles, const unsigned int nuance, const int neutrino_pdg, const unsigned int charged_pi, const unsigned int neutral_pi, const bool is_cc, const TVector3 &mc_vertex, const TVector3 &reco_vertex, const float neutrino_energy) :
@@ -12,7 +12,23 @@ namespace ana{
     m_is_cc(is_cc),
     m_mc_vertex(mc_vertex),
     m_reco_vertex(reco_vertex), 
-    m_neutrino_energy(neutrino_energy) {}
+    m_neutrino_energy(neutrino_energy) {
+    
+      // Co-ordinate offset in cm
+      m_sbnd_half_length_x = 400;
+      m_sbnd_half_length_y = 400;
+      m_sbnd_half_length_z = 500;
+      
+      m_sbnd_offset_x = 200;
+      m_sbnd_offset_y = 200;
+      m_sbnd_offset_z = 0;
+
+      m_sbnd_border_x = 10;
+      m_sbnd_border_y = 20;
+      m_sbnd_border_z = 10;
+
+    }
+
 
   //------------------------------------------------------------------------------------------ 
     
@@ -108,6 +124,26 @@ namespace ana{
     return m_neutral_pi;
 
   }
+
+  //------------------------------------------------------------------------------------------ 
+  
+  bool Event::IsSBNDTrueFiducial() const{
+       
+    // Check the neutrino interaction vertex is within the fiducial volume      
+     float nu_vertex_x = m_mc_vertex[0];                        
+     float nu_vertex_y = m_mc_vertex[1];                        
+     float nu_vertex_z = m_mc_vertex[2];                        
+                                                                                 
+     if (    (nu_vertex_x > (m_sbnd_half_length_x - m_sbnd_offset_x - m_sbnd_border_x)) 
+          || (nu_vertex_x < (-m_sbnd_offset_x + m_sbnd_border_x))          
+          || (nu_vertex_y > (m_sbnd_half_length_y - m_sbnd_offset_y - m_sbnd_border_y)) 
+          || (nu_vertex_y < (-m_sbnd_offset_y + m_sbnd_border_y))          
+          || (nu_vertex_z > (m_sbnd_half_length_z - m_sbnd_offset_z - m_sbnd_border_z)) 
+          || (nu_vertex_z < (-m_sbnd_offset_z + m_sbnd_border_z))) return false; 
+
+     return true;
+  }
+
   //------------------------------------------------------------------------------------------ 
   
   int Event::GetPhysicalProcess() const{
@@ -175,79 +211,41 @@ namespace ana{
   //------------------------------------------------------------------------------------------ 
 
   unsigned int Event::CountParticlesWithPdg(const int pdg, const ParticleList &particle_list) const{
-  
     unsigned int particle_counter = 0;
-
     for(unsigned int i = 0; i < particle_list.size(); ++i) if(particle_list[i].GetPdgCode() == pdg) particle_counter++;
-
     return particle_counter;
   }
 
   //------------------------------------------------------------------------------------------ 
   
   bool Event::CheckTopology(const TopologyMap &topology, const ParticleList &particle_list) const{
-   
     // Loop over the map
     for( TopologyMap::const_iterator it = topology.begin(); it != topology.end(); ++it ){
-
       // Define temporary variables for the current map element
       std::vector< int > pdg_codes = it->first; 
       int n_total                  = it->second;
-
       // Count the number of particles in the current event with the same PDG codes 
       // as given by the chosen topology
       int counter = 0;
-     
       // Loop over particles in current event
       for(unsigned int i = 0; i < pdg_codes.size(); ++i){
-
         counter += this->CountParticlesWithPdg(pdg_codes[i], particle_list);
       }
-      
       if(counter != n_total) return false;
     }
-
     return true;
-
-  }
-
-  float Event::GetCC0piRecoNeutrinoEnergy(const Particle &particle) const{
-    
-    // The variables from the branches and get the leaves
-    float m_n   = 0.93828;   // Nucleon mass, GeV
-    float m_mu  = 0.10566;   // Muon mass, GeV
-    float reco, e, p, cth;   // track variables
-    
-    // Vector of z direction
-    TVector3 z;
-    z[0] = 0;
-    z[1] = 0;
-    z[2] = 1;
-
-    // Get the values needed
-    e    = particle.GetEnergy();
-    p    = particle.GetMomentum().Mag();
-    cth  = (1/p) * (particle.GetMomentum()).Dot(z);
-    
-    reco = ( 1 / ( 1 - ( ( 1 / m_n ) * ( e - p*cth ) ) ) ) * ( e - ( 1 / ( 2 * m_n) ) * m_mu * m_mu );
-
-    return reco;
-  
   }
   
+  //------------------------------------------------------------------------------------------
+ 
   Particle Event::GetMostEnergeticParticle(const ParticleList &particle_list) const{
-
     float highest_energy   = -std::numeric_limits<float>::max();
     unsigned int energy_id = std::numeric_limits<unsigned int >::max();
-
     for(unsigned int i = 0; i < particle_list.size(); ++i){
-    
       if(!particle_list[i].GetHasCalorimetry()) continue;
-
       if(particle_list[i].GetEnergy() > highest_energy) energy_id = i;
     }
-
     return particle_list[energy_id];
-
   }
-} // ana
+  
+} // selection

@@ -9,6 +9,9 @@
 #include "../include/Event.h"
 #include "../include/Particle.h"
 #include "../include/EventSelectionTool.h"
+#include "../include/CC0piAnalysisHelper.h"
+#include "../include/CC1piAnalysisHelper.h"
+#include "../include/GeneralAnalysisHelper.h"
 
 namespace ana{
 

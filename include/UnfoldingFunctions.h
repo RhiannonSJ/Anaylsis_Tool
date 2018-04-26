@@ -4,10 +4,13 @@
 #include "../src/RooUnfoldResponse.h"
 #include "../src/RooUnfoldBayes.h"
 
-#include "../include/RooUnfoldHeaders.h"
-#include "../include/EventSelectionTool.h"
-#include "../include/Particle.h"
-#include "../include/Event.h"
+#include "RooUnfoldHeaders.h"
+#include "CC0piAnalysisHelper.h"
+#include "CC1piAnalysisHelper.h"
+#include "GeneralAnalysisHelper.h"
+#include "EventSelectionTool.h"
+#include "Particle.h"
+#include "Event.h"
 
 namespace ana{
 

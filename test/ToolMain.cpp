@@ -1,4 +1,7 @@
 #include "../include/EventSelectionTool.h"
+#include "../include/CC1piAnalysisHelper.h"
+#include "../include/CC0piAnalysisHelper.h"
+#include "../include/GeneralAnalysisHelper.h"
 #include "../include/Event.h"
 #include <iostream>
 #include <iomanip>
@@ -67,33 +70,11 @@ int MainTest(){
   // Initialise event list and the topology maps
   EventSelectionTool::EventList events;
   
-  TopologyMap cc_signal_map;
-  TopologyMap nc_signal_map;
-  TopologyMap cc0pi_signal_map;
-  TopologyMap cc1pi_signal_map;
-  TopologyMap ccpi0_signal_map;
- 
-  std::vector< int > mu;
-  std::vector< int > pi;
-  std::vector< int > pi0;
-  
-  mu.push_back( 13 );
-  pi.push_back( 211 );
-  pi.push_back(-211 );
-  pi0.push_back( 111 );
-  
-  cc_signal_map.insert( std::make_pair( mu,  1 ) );
-  nc_signal_map.insert( std::make_pair( mu,  0 ) );
-  
-  cc0pi_signal_map.insert( std::make_pair( mu,  1 ) );
-  cc0pi_signal_map.insert( std::make_pair( pi,  0 ) );
-  cc0pi_signal_map.insert( std::make_pair( pi0, 0 ) );
-
-  cc1pi_signal_map.insert( std::make_pair( mu,  1 ) );
-  cc1pi_signal_map.insert( std::make_pair( pi,  1 ) );
-  
-  ccpi0_signal_map.insert( std::make_pair( mu,  1 ) );
-  ccpi0_signal_map.insert( std::make_pair( pi0, 1 ) );
+  TopologyMap cc_signal_map    = GeneralAnalysisHelper::GetCCIncTopologyMap();
+  TopologyMap nc_signal_map    = GeneralAnalysisHelper::GetNCTopologyMap();
+  TopologyMap cc0pi_signal_map = GeneralAnalysisHelper::GetCC0PiTopologyMap();
+  TopologyMap cc1pi_signal_map = GeneralAnalysisHelper::GetCC1PiTopologyMap();
+  TopologyMap ccpi0_signal_map = GeneralAnalysisHelper::GetCCPi0TopologyMap();
   
   for( unsigned int i = 0; i < 500; ++i ){
  
@@ -117,26 +98,7 @@ int MainTest(){
   }
 
   std::cout << std::endl;
- /* 
-  for( unsigned int i = 0; i < 398; ++i ){
   
-    // Get the filename for each 2D histogram
-    std::stringstream ss;
-    ss.clear();
-    
-    std::string name;
-    name.clear();
-    
-    char file_name[1024];
-    
-    ss << "/hepstore/rjones/Samples/FNAL/analysis_trees/all/3486578_" << i <<"/output_file.root";
-    name = ss.str();
-            
-    strcpy( file_name, name.c_str() );
-      
-    EventSelectionTool::LoadEventList(file_name, events);
-  }
-*/
   // Neutrino energy histograms
   TH1F *h_reco_energy      = new TH1F("h_reco_energy",      "#nu_{#mu} CC 0#pi neutrino energy",100,-0.5,2);
   TH1F *h_good_reco_energy = new TH1F("h_good_reco_energy", "#nu_{#mu} CC 0#pi neutrino energy",100,-0.5,2);
@@ -178,7 +140,7 @@ int MainTest(){
       
       // Get reconstructed energy
       for( unsigned int i = 0; i < n_particles; ++i ) if(parts[i].GetPdgCode() == 13) {
-        good_reco_neutrino_energy.push_back(e.GetCC0piRecoNeutrinoEnergy(parts[i]));
+        good_reco_neutrino_energy.push_back(CC0piAnalysisHelper::GetRecoCC0piNeutrinoEnergy(e));
 
         TVector3 z;
         z[0] = 0;
@@ -212,7 +174,7 @@ int MainTest(){
       
       // Get reconstructed energy
       for( unsigned int i = 0; i < n_particles; ++i ) if(parts[i].GetPdgCode() == 13) {
-        reco_neutrino_energy.push_back(e.GetCC0piRecoNeutrinoEnergy(parts[i]));
+        reco_neutrino_energy.push_back(CC0piAnalysisHelper::GetRecoCC0piNeutrinoEnergy(e));
       }
       
       // Nuance codes
@@ -310,7 +272,7 @@ int MainTest(){
   h_true_energy->Draw("same");
   l->Draw();
 
-  c->SaveAs("..Output_Analysis_Tool/Tool/cc0pi_nu_energy.root");
+  c->SaveAs("../Output_Analysis_Tool/Tool/cc0pi_nu_energy.root");
   c->Clear();
 
   gStyle->SetPalette(55);
@@ -321,7 +283,7 @@ int MainTest(){
   h_energy_cos->GetYaxis()->SetTitle("cos#theta_{#mu}");
   h_energy_cos->Draw("colz");
  
-  c->SaveAs("..Output_Analysis_Tool/Tool/cc0pi_energy_cos.root");
+  c->SaveAs("../Output_Analysis_Tool/Tool/cc0pi_energy_cos.root");
   c->Clear();
   
   time_t rawtime_end;
