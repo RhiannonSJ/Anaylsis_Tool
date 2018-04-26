@@ -32,7 +32,7 @@ namespace ana{
       
       // Get the magnitude of the momentum
       double momentum_magnitude = sqrt(pow(m_energy,2) - pow(m_mass,2));
-      m_momentum = momentum_magnitude * (m_end - m_vertex);
+      m_momentum = momentum_magnitude * (m_end - m_vertex)*(1/double((m_end - m_vertex).Mag()));
 
     }
 

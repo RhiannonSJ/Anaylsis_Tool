@@ -1,6 +1,7 @@
 #include "../include/EventSelectionTool.h"
 #include "../include/Event.h"
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <numeric>
 #include <time.h>
@@ -94,6 +95,29 @@ int MainTest(){
   ccpi0_signal_map.insert( std::make_pair( mu,  1 ) );
   ccpi0_signal_map.insert( std::make_pair( pi0, 1 ) );
   
+  for( unsigned int i = 0; i < 500; ++i ){
+ 
+    // Get the filename for each 2D histogram
+    std::stringstream ss;
+    ss.clear();
+    
+    std::string name;
+    name.clear();
+    
+    char file_name[1024];
+    ss << "/hepstore/rjones/Samples/FNAL/sbn_workshop_0318_new/4883618_" << i <<"/output_file.root";
+    name = ss.str();
+            
+    strcpy( file_name, name.c_str() );
+      
+    EventSelectionTool::LoadEventList(file_name, events);
+    
+    std::cout << "Loaded file " << std::setw(4) << i << '\r' << flush;
+
+  }
+
+  std::cout << std::endl;
+ /* 
   for( unsigned int i = 0; i < 398; ++i ){
   
     // Get the filename for each 2D histogram
@@ -112,7 +136,7 @@ int MainTest(){
       
     EventSelectionTool::LoadEventList(file_name, events);
   }
-
+*/
   // Neutrino energy histograms
   TH1F *h_reco_energy      = new TH1F("h_reco_energy",      "#nu_{#mu} CC 0#pi neutrino energy",100,-0.5,2);
   TH1F *h_good_reco_energy = new TH1F("h_good_reco_energy", "#nu_{#mu} CC 0#pi neutrino energy",100,-0.5,2);
@@ -286,7 +310,7 @@ int MainTest(){
   h_true_energy->Draw("same");
   l->Draw();
 
-  c->SaveAs("plots/cc0pi_nu_energy.root");
+  c->SaveAs("..Output_Analysis_Tool/Tool/cc0pi_nu_energy.root");
   c->Clear();
 
   gStyle->SetPalette(55);
@@ -297,7 +321,7 @@ int MainTest(){
   h_energy_cos->GetYaxis()->SetTitle("cos#theta_{#mu}");
   h_energy_cos->Draw("colz");
  
-  c->SaveAs("plots/cc0pi_energy_cos.root");
+  c->SaveAs("..Output_Analysis_Tool/Tool/cc0pi_energy_cos.root");
   c->Clear();
   
   time_t rawtime_end;

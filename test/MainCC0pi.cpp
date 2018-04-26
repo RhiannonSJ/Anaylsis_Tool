@@ -59,6 +59,52 @@ int MainCC0pi(){
   EventSelectionTool::EventList training_events;
   EventSelectionTool::EventList testing_events;
   
+  // Load the events into the event list
+  for( unsigned int i = 0; i < 250; ++i ){
+ 
+    // Get the filename for each 2D histogram
+    std::stringstream ss;
+    ss.clear();
+    
+    std::string name;
+    name.clear();
+    
+    char file_name[1024];
+    ss << "/hepstore/rjones/Samples/FNAL/sbn_workshop_0318_new/4883618_" << i <<"/output_file.root";
+    name = ss.str();
+            
+    strcpy( file_name, name.c_str() );
+      
+    EventSelectionTool::LoadEventList(file_name, training_events);
+    
+    std::cout << "Loaded file " << std::setw(4) << i << '\r' << flush;
+
+  }
+  
+  // Load the events into the event list
+  for( unsigned int i = 250; i < 500; ++i ){
+ 
+    // Get the filename for each 2D histogram
+    std::stringstream ss;
+    ss.clear();
+    
+    std::string name;
+    name.clear();
+    
+    char file_name[1024];
+    ss << "/hepstore/rjones/Samples/FNAL/sbn_workshop_0318_new/4883618_" << i <<"/output_file.root";
+    name = ss.str();
+            
+    strcpy( file_name, name.c_str() );
+      
+    EventSelectionTool::LoadEventList(file_name, testing_events);
+    
+    std::cout << "Loaded file " << std::setw(4) << i << '\r' << flush;
+
+  }
+
+  std::cout << std::endl;
+ /* 
   for( unsigned int i = 0; i < 198; ++i ){
   
     // Get the filename for each 2D histogram
@@ -95,7 +141,7 @@ int MainCC0pi(){
     strcpy( file_name, name.c_str() );
       
     EventSelectionTool::LoadEventList(file_name, testing_events);
-  }
+  }*/
  
   // Maps
   TopologyMap signal_all;
@@ -145,10 +191,10 @@ int MainCC0pi(){
   }
 
   // File path
-  const char file_path[1024]  = "/hepstore/rjones/Exercises/Anaylsis_Tool/plots/CC0Pi/all_signal/";
-  const char file_path1[1024] = "/hepstore/rjones/Exercises/Anaylsis_Tool/plots/CC0Pi/1_p/";
-  const char file_path2[1024] = "/hepstore/rjones/Exercises/Anaylsis_Tool/plots/CC0Pi/2_p/";
-  const char file_path3[1024] = "/hepstore/rjones/Exercises/Anaylsis_Tool/plots/CC0Pi/3_p/";
+  const char file_path[1024]  = "/hepstore/rjones/Exercises/Output_Analysis_Tool/CC0Pi/all_signal/";
+  const char file_path1[1024] = "/hepstore/rjones/Exercises/Output_Analysis_Tool/CC0Pi/1_p/";
+  const char file_path2[1024] = "/hepstore/rjones/Exercises/Output_Analysis_Tool/CC0Pi/2_p/";
+  const char file_path3[1024] = "/hepstore/rjones/Exercises/Output_Analysis_Tool/CC0Pi/3_p/";
  
   TH2D *h_ddxsec_all = RunAll( h_flux, training_events, testing_events, signal_all, file_path );
   TH2D *h_ddxsec_1p  = RunAll( h_flux, training_events, testing_events, signal_1p,  file_path1 );
@@ -167,7 +213,7 @@ int MainCC0pi(){
   ddxsec.push_back( h_ddxsec_2p );
   ddxsec.push_back( h_ddxsec_3p );
   
-  SignalComparison( ddxsec, "/hepstore/rjones/Exercises/Anaylsis_Tool/plots/CC0Pi/comparison/", names ); 
+  SignalComparison( ddxsec, "/hepstore/rjones/Exercises/Output_Analysis_Tool/CC0Pi/comparison/", names ); 
 
   delete h_ddxsec_all;
   delete h_ddxsec_1p;

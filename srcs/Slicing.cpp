@@ -11,7 +11,7 @@ namespace ana{
 
       TCanvas *c_T   = new TCanvas ( "c_T", "", 800, 600 );
      
-      TLegend *leg_T   = new TLegend( 0.12, 0.68, 0.32, 0.88 );
+      TLegend *leg_T   = new TLegend( 0.12, 0.68, 0.42, 0.88 );
 
       TH1D *h_T      = new TH1D ( "h_T", "", x_bins, -1, 1 );
       TH1D *h_T_true = new TH1D ( "h_T_true", "", x_bins, -1, 1 );
@@ -20,6 +20,7 @@ namespace ana{
       leg_T->AddEntry( h_T, " Unfolded ", "l" );
       leg_T->AddEntry( h_T_true, " True ", "l" );
       leg_T->AddEntry( h_T_reco, " Reco ", "l" );
+      leg_T->SetBorderSize(0);
       
       for ( int i = 1; i <= y_bins; ++i ){
 
@@ -101,7 +102,7 @@ namespace ana{
 
       TCanvas *c_cos   = new TCanvas ( "c_cos", "", 800, 600 );
       
-      TLegend *leg_c     = new TLegend( 0.68, 0.68, 0.88, 0.88 );
+      TLegend *leg_c     = new TLegend( 0.58, 0.58, 0.88, 0.88 );
 
       TH1D *h_cos      = new TH1D ( "h_cos", "", y_bins, 0.2, 2 );
       TH1D *h_cos_true = new TH1D ( "h_cos_true", "", y_bins, 0.2, 2 );
@@ -110,6 +111,7 @@ namespace ana{
       leg_c->AddEntry( h_cos, " Unfolded ", "l" );
       leg_c->AddEntry( h_cos_true, " True ", "l" );
       leg_c->AddEntry( h_cos_reco, " Reco ", "l" );
+      leg_c->SetBorderSize(0);
       
       // Cos theta mu slices
       for ( int i = 1; i <= x_bins; ++i ){
@@ -393,7 +395,8 @@ namespace ana{
       // T histograms
       std::vector< TH1D* > signal_h;
       
-      TLegend *leg_T         = new TLegend( 0.16, 0.66, 0.30, 0.88 );
+      TLegend *leg_T         = new TLegend( 0.16, 0.56, 0.40, 0.88 );
+      leg_T->SetBorderSize(0);
 
       TH1D *h_T_muccqe     = new TH1D ( "h_T_muccqe",    "", x_bins, -1, 1 );
       TH1D *h_T_muccmec    = new TH1D ( "h_T_muccmec",   "", x_bins, -1, 1 );
@@ -406,7 +409,8 @@ namespace ana{
       // Cos histograms
       std::vector< TH1D* > signal_c_h;
       
-      TLegend *leg_cos = new TLegend( 0.72, 0.66, 0.86, 0.88 );
+      TLegend *leg_cos = new TLegend( 0.62, 0.56, 0.86, 0.88 );
+      leg_cos->SetBorderSize(0);
    
       TH1D *h_cos_muccqe     = new TH1D ( "h_cos_muccqe",     "", y_bins, 0.2, 2 );
       TH1D *h_cos_muccmec    = new TH1D ( "h_cos_muccmec",    "", y_bins, 0.2, 2 );
@@ -854,7 +858,8 @@ namespace ana{
       
       TCanvas *c_T   = new TCanvas ( "c_T", "", 800, 600 );
              
-      TLegend *leg_T   = new TLegend( 0.12, 0.68, 0.38, 0.88 );
+      TLegend *leg_T   = new TLegend( 0.12, 0.58, 0.48, 0.88 );
+      leg_T->SetBorderSize(0);
 
       std::vector< TH1D* > h_1D;
 
@@ -912,7 +917,7 @@ namespace ana{
               for( unsigned int k = 0; k < vect_ddxsec.size(); ++k ){
               
                   h_1D[k]->SetBinContent( j, vect_ddxsec[k]->GetBinContent(j, i) );
-                  h_1D[k]->SetBinError( j, vect_ddxsec[k]->GetBinError(j, i) );
+                  h_1D[k]->SetBinError( j,   vect_ddxsec[k]->GetBinError(j, i) );
                   
               }
           }
@@ -969,7 +974,8 @@ namespace ana{
 
       TCanvas *c_cos   = new TCanvas ( "c_cos", "", 800, 600 );
      
-      TLegend *leg_cos = new TLegend( 0.72, 0.66, 0.86, 0.88 );
+      TLegend *leg_cos = new TLegend( 0.62, 0.56, 0.86, 0.88 );
+      leg_cos->SetBorderSize(0);
 
       std::vector< TH1D* > h_1D_c;
 
@@ -1029,7 +1035,7 @@ namespace ana{
               for( unsigned int k = 0; k < vect_ddxsec.size(); ++k ){
               
                   h_1D_c[k]->SetBinContent( j, vect_ddxsec[k]->GetBinContent(i, j) );
-                  h_1D_c[k]->SetBinError( j, vect_ddxsec[k]->GetBinError(i, j) );
+                  h_1D_c[k]->SetBinError( j,   vect_ddxsec[k]->GetBinError(i, j) );
                   
               }
           }
