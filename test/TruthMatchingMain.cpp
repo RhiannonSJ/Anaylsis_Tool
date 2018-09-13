@@ -27,6 +27,7 @@ int MainTest(){
   std::cout << "-----------------------------------------------------------" << std::endl;
   std::cout << " Start local time and date:  " << asctime(timeinfo)         << std::endl;
   std::cout << "-----------------------------------------------------------" << std::endl;
+  std::cout << endl;
  
   // Output file location
   std::string stats_location = "../Output_Selection_Tool/statistics/";
@@ -45,26 +46,25 @@ int MainTest(){
   TopologyMap cc1pi_signal_map = GeneralAnalysisHelper::GetCC1PiTopologyMap();
   TopologyMap ccpi0_signal_map = GeneralAnalysisHelper::GetCCPi0TopologyMap();
  
+  int start = static_cast<int>(time(NULL));
+  unsigned int total = 500;
+
   // Load the events into the event list
-  for( unsigned int i = 0; i < 500; ++i ){
- 
-    // Get the filename for each 2D histogram
-    std::stringstream ss;
-    ss.clear();
-    
+  for( unsigned int i = 0; i < total; ++i ){
+
+    //if(i == 0 || i == 1 || i == 2 || i == 6 || i == 7) continue;
+
+    // Get the filenames
     std::string name;
     name.clear();
-    
     char file_name[1024];
-    ss << "/hepstore/rjones/Samples/FNAL/sbn_workshop_0318_new/4883618_" << i <<"/output_file.root";
-    name = ss.str();
-            
+    name = "/hepstore/rjones/Samples/FNAL/120918_analysis_sample/11509725_"+std::to_string(i)+"/output_file.root";
     strcpy( file_name, name.c_str() );
-      
-    EventSelectionTool::LoadEventList(file_name, events);
-    
-    std::cout << "Loaded file " << std::setw(4) << i << '\r' << flush;
 
+    EventSelectionTool::LoadEventList(file_name, events, i);
+    
+    //std::cout << "Loaded file " << std::setw(4) << i << '\r' << flush;
+    EventSelectionTool::GetTimeLeft(start,total,i);
   }
 
   std::cout << std::endl;
@@ -79,22 +79,24 @@ int MainTest(){
 
   // Files to hold particle statistics
   ofstream all_file;
-  all_file.open(stats_location+"particle_stats.txt");
+  all_file.open(stats_location+"chi2p_particle_stats.txt");
 
   ofstream mis_id_file;
-  mis_id_file.open(stats_location+"mis_identification_stats.txt");
+  mis_id_file.open(stats_location+"chi2p_mis_identification_stats.txt");
 
   GeneralAnalysisHelper::FillGeneralParticleStatisticsFile(events, all_file);
   GeneralAnalysisHelper::FillTopologyBasedParticleStatisticsFile(events, nc_signal_map, "NC Inclusive",  all_file);
   GeneralAnalysisHelper::FillTopologyBasedParticleStatisticsFile(events, cc_signal_map, "CC Inclusive",  all_file);
   GeneralAnalysisHelper::FillTopologyBasedParticleStatisticsFile(events, cc0pi_signal_map, "CC 0 Pi",    all_file);
   GeneralAnalysisHelper::FillTopologyBasedParticleStatisticsFile(events, cc1pi_signal_map, "CC 1 Pi+/-", all_file);
+  GeneralAnalysisHelper::FillTopologyBasedParticleStatisticsFile(events, ccpi0_signal_map, "CC Pi0",     all_file);
 
   GeneralAnalysisHelper::FillGeneralParticleMisIdStatisticsFile(events, mis_id_file);
   GeneralAnalysisHelper::FillTopologyBasedParticleMisIdStatisticsFile(events, nc_signal_map, "NC Inclusive",  mis_id_file);
   GeneralAnalysisHelper::FillTopologyBasedParticleMisIdStatisticsFile(events, cc_signal_map, "CC Inclusive",  mis_id_file);
   GeneralAnalysisHelper::FillTopologyBasedParticleMisIdStatisticsFile(events, cc0pi_signal_map, "CC 0 Pi",    mis_id_file);
   GeneralAnalysisHelper::FillTopologyBasedParticleMisIdStatisticsFile(events, cc1pi_signal_map, "CC 1 Pi+/-", mis_id_file);
+  GeneralAnalysisHelper::FillTopologyBasedParticleMisIdStatisticsFile(events, ccpi0_signal_map, "CC Pi0",     mis_id_file);
 
   time_t rawtime_end;
   struct tm * timeinfo_end;

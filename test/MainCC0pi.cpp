@@ -62,90 +62,35 @@ int MainCC0pi(){
   EventSelectionTool::EventList training_events;
   EventSelectionTool::EventList testing_events;
   
-  // Load the events into the event list
-  for( unsigned int i = 0; i < 250; ++i ){
- 
-    // Get the filename for each 2D histogram
-    std::stringstream ss;
-    ss.clear();
-    
+  int start = static_cast<int>(time(NULL));
+  unsigned int half_files = 250;
+  unsigned int full_files = 500;
+
+  // Load the events into the training event list
+  for( unsigned int i = 0; i < half_files; ++i ){
+    // Get the filenames
     std::string name;
     name.clear();
-    
     char file_name[1024];
-    ss << "/hepstore/rjones/Samples/FNAL/sbn_workshop_0318_new/4883618_" << i <<"/output_file.root";
-    name = ss.str();
-            
+    name = "/hepstore/rjones/Samples/FNAL/120918_analysis_sample/11509725_"+std::to_string(i)+"/output_file.root";
     strcpy( file_name, name.c_str() );
-      
-    EventSelectionTool::LoadEventList(file_name, training_events);
-    
-    std::cout << "Loaded file " << std::setw(4) << i << '\r' << flush;
 
+    EventSelectionTool::LoadEventList(file_name, training_events, i);
+    EventSelectionTool::GetTimeLeft(start,half_files,i);
   }
-  
-  // Load the events into the event list
-  for( unsigned int i = 250; i < 500; ++i ){
- 
-    // Get the filename for each 2D histogram
-    std::stringstream ss;
-    ss.clear();
-    
+  for( unsigned int i = half_files; i < full_files; ++i ){
+    // Get the filenames
     std::string name;
     name.clear();
-    
     char file_name[1024];
-    ss << "/hepstore/rjones/Samples/FNAL/sbn_workshop_0318_new/4883618_" << i <<"/output_file.root";
-    name = ss.str();
-            
+    name = "/hepstore/rjones/Samples/FNAL/120918_analysis_sample/11509725_"+std::to_string(i)+"/output_file.root";
     strcpy( file_name, name.c_str() );
-      
-    EventSelectionTool::LoadEventList(file_name, testing_events);
-    
-    std::cout << "Loaded file " << std::setw(4) << i << '\r' << flush;
 
+    EventSelectionTool::LoadEventList(file_name, testing_events, i);
+    EventSelectionTool::GetTimeLeft(start,half_files,i);
   }
-
   std::cout << std::endl;
- /* 
-  for( unsigned int i = 0; i < 198; ++i ){
   
-    // Get the filename for each 2D histogram
-    std::stringstream ss;
-    ss.clear();
-    
-    std::string name;
-    name.clear();
-    
-    char file_name[1024];
-    
-    ss << "/hepstore/rjones/Samples/FNAL/analysis_trees/all/3486578_" << i <<"/output_file.root";
-    name = ss.str();
-            
-    strcpy( file_name, name.c_str() );
-      
-    EventSelectionTool::LoadEventList(file_name, training_events);
-  }
-
-  for( unsigned int i = 198; i < 398; ++i ){
-  
-    // Get the filename for each 2D histogram
-    std::stringstream ss;
-    ss.clear();
-    
-    std::string name;
-    name.clear();
-    
-    char file_name[1024];
-    
-    ss << "/hepstore/rjones/Samples/FNAL/analysis_trees/all/3486578_" << i <<"/output_file.root";
-    name = ss.str();
-            
-    strcpy( file_name, name.c_str() );
-      
-    EventSelectionTool::LoadEventList(file_name, testing_events);
-  }*/
- 
   // Maps
   TopologyMap signal_all;
   TopologyMap signal_1p;

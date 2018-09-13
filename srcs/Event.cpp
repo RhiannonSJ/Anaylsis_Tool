@@ -2,17 +2,20 @@
 #include "../include/EventSelectionTool.h"
 namespace ana{
   
-  Event::Event(const ParticleList &mc_particles, const ParticleList &reco_particles, const unsigned int nuance, const int neutrino_pdg, const unsigned int charged_pi, const unsigned int neutral_pi, const bool is_cc, const TVector3 &mc_vertex, const TVector3 &reco_vertex, const float neutrino_energy) :
+  Event::Event(const ParticleList &mc_particles, const ParticleList &reco_particles, const unsigned int interaction, const unsigned int scatter, const int neutrino_pdg, const unsigned int charged_pi, const unsigned int neutral_pi, const bool is_cc, const TVector3 &mc_vertex, const TVector3 &reco_vertex, const float neutrino_energy, const int &file, const int &id) :
     m_mc_particles(mc_particles),
     m_reco_particles(reco_particles),
-    m_nuance(nuance),
+    m_interaction(interaction),
+    m_scatter(scatter),
     m_nu_pdg(neutrino_pdg),
     m_charged_pi(charged_pi),
     m_neutral_pi(neutral_pi),
     m_is_cc(is_cc),
     m_mc_vertex(mc_vertex),
     m_reco_vertex(reco_vertex), 
-    m_neutrino_energy(neutrino_energy) {
+    m_neutrino_energy(neutrino_energy),
+    m_file(file),
+    m_id(id) {
     
       // Co-ordinate offset in cm
       m_sbnd_half_length_x = 400;
@@ -28,7 +31,6 @@ namespace ana{
       m_sbnd_border_z = 10;
 
     }
-
 
   //------------------------------------------------------------------------------------------ 
     
@@ -78,6 +80,18 @@ namespace ana{
   }
 
   //------------------------------------------------------------------------------------------ 
+  
+  int Event::GetFileId() const{
+    return m_file;
+  }
+
+  //------------------------------------------------------------------------------------------ 
+  
+  int Event::GetId() const{
+    return m_id;
+  }
+
+  //------------------------------------------------------------------------------------------ 
 
   ParticleList Event::GetMCParticleList() const{
   
@@ -95,9 +109,17 @@ namespace ana{
 
   //------------------------------------------------------------------------------------------ 
   
-  int Event::GetNuanceCode() const{
+  int Event::GetInteractionType() const{
   
-    return m_nuance;
+    return m_interaction;
+  
+  }
+  
+  //------------------------------------------------------------------------------------------ 
+  
+  int Event::GetPhysicalProcess() const{
+  
+    return m_scatter;
   
   }
 
@@ -127,53 +149,52 @@ namespace ana{
 
   //------------------------------------------------------------------------------------------ 
   
+  TVector3 Event::GetMinimumFiducialDimensions() const{
+    return TVector3((-m_sbnd_offset_x + m_sbnd_border_x), 
+                    (-m_sbnd_offset_y + m_sbnd_border_y), 
+                    (-m_sbnd_offset_z + m_sbnd_border_z));
+  }
+
+  //------------------------------------------------------------------------------------------ 
+  
+  TVector3 Event::GetMaximumFiducialDimensions() const{
+    return TVector3((m_sbnd_half_length_x - m_sbnd_offset_x - m_sbnd_border_x), 
+                    (m_sbnd_half_length_y - m_sbnd_offset_y - m_sbnd_border_y), 
+                    (m_sbnd_half_length_z - m_sbnd_offset_z - m_sbnd_border_z));
+  }
+  
+  //------------------------------------------------------------------------------------------ 
+  
   bool Event::IsSBNDTrueFiducial() const{
        
     // Check the neutrino interaction vertex is within the fiducial volume      
      float nu_vertex_x = m_mc_vertex[0];                        
      float nu_vertex_y = m_mc_vertex[1];                        
-     float nu_vertex_z = m_mc_vertex[2];                        
+     float nu_vertex_z = m_mc_vertex[2];                
+     float min_fid_x = Event::GetMinimumFiducialDimensions()[0];
+     float min_fid_y = Event::GetMinimumFiducialDimensions()[1];
+     float min_fid_z = Event::GetMinimumFiducialDimensions()[2];
+     float max_fid_x = Event::GetMaximumFiducialDimensions()[0];
+     float max_fid_y = Event::GetMaximumFiducialDimensions()[1];
+     float max_fid_z = Event::GetMaximumFiducialDimensions()[2];
                                                                                  
-     if (    (nu_vertex_x > (m_sbnd_half_length_x - m_sbnd_offset_x - m_sbnd_border_x)) 
-          || (nu_vertex_x < (-m_sbnd_offset_x + m_sbnd_border_x))          
-          || (nu_vertex_y > (m_sbnd_half_length_y - m_sbnd_offset_y - m_sbnd_border_y)) 
-          || (nu_vertex_y < (-m_sbnd_offset_y + m_sbnd_border_y))          
-          || (nu_vertex_z > (m_sbnd_half_length_z - m_sbnd_offset_z - m_sbnd_border_z)) 
-          || (nu_vertex_z < (-m_sbnd_offset_z + m_sbnd_border_z))) return false; 
+     if (    (nu_vertex_x > max_fid_x)  
+          || (nu_vertex_x < min_fid_x)
+          || (nu_vertex_y > max_fid_y)
+          || (nu_vertex_y < min_fid_y)
+          || (nu_vertex_z > max_fid_z)
+          || (nu_vertex_z < min_fid_z)) return false;
 
      return true;
   }
 
   //------------------------------------------------------------------------------------------ 
-  
-  int Event::GetPhysicalProcess() const{
-
-    // QEL
-    if(m_nuance == 0 
-    || m_nuance == 1001 
-    || m_nuance == 1002) return 0;
-    // MEC
-    else if(m_nuance == 10) return 1;
-    // RES
-    else if(m_nuance == 1 
-         || m_nuance == 1003 
-         || m_nuance == 1004
-         || m_nuance == 1005
-         || m_nuance == 1006
-         || m_nuance == 1007
-         || m_nuance == 1008
-         || m_nuance == 1009
-         || m_nuance == 1010) return 2;
-    // DIS
-    else if(m_nuance == 2
-         || m_nuance == 1091) return 3;
-    // COH
-    else if(m_nuance == 1097) return 4;
-    // Non RES 1pi
-    else if(m_charged_pi + m_neutral_pi == 1) return 5;
-    // Other
-    else return 6;
-  
+ 
+  bool Event::AllContained() const{
+    for(const Particle &p : m_reco_particles){
+      if(p.GetFromRecoTrack() && !p.GetTrackContained()) return false;
+    }
+    return true;
   }
       
   //------------------------------------------------------------------------------------------ 
@@ -212,7 +233,7 @@ namespace ana{
 
   unsigned int Event::CountParticlesWithPdg(const int pdg, const ParticleList &particle_list) const{
     unsigned int particle_counter = 0;
-    for(unsigned int i = 0; i < particle_list.size(); ++i) if(particle_list[i].GetPdgCode() == pdg) particle_counter++;
+    for(unsigned int i = 0; i < particle_list.size(); ++i) if(particle_list[i].GetPdgCode() == pdg && particle_list[i].GetNumberOfHits() > 5) particle_counter++;
     return particle_counter;
   }
 
@@ -248,4 +269,4 @@ namespace ana{
     return particle_list[energy_id];
   }
   
-} // selection
+} // ana

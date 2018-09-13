@@ -199,5 +199,5 @@ namespace ana{
       static float GetCC1piNeutrinoEnergyMethod2(const ParticleList &particle_list);
 
   }; // CC1piAnalysisHelper
-} // namespace: selection
+} // namespace: ana
 #endif

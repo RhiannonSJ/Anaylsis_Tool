@@ -1,6 +1,8 @@
 #ifndef EVENT_SELECTION_TOOL_H
 #define EVENT_SELECTION_TOOL_H
 
+#include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
 #include <utility>
@@ -34,12 +36,32 @@ namespace ana{
        *
        * @param  file_name name of the root file to access
        * @param  event_list vector of events to fill
+       * @param  file number of the file of the current event
        *
        */
-      static void LoadEventList(const std::string &file_name, EventList &event_list);
+      static void LoadEventList(const std::string &file_name, EventList &event_list, const int &file);
 
-    private : 
+      /**
+       * @brief  Output the length of time left in the running
+       *
+       * @param  start_time time at the start of the run
+       * @param  total number of events
+       * @param  iteration
+       *
+       */
+      static void GetTimeLeft(const int start_time, const int total, const unsigned int i);
 
+    private :
+
+      /**
+       * @brief  check if a particle should be flipped and flip it
+       *
+       * @param  vtx the neutrino interaction vertex
+       * @param  particles the particles in the event
+       *
+       */
+      static void CheckAndFlip(const TVector3 &vtx, ParticleList &particles);
+      
       /**
        * @brief  get a list of event IDs which are entirely unique
        *
@@ -80,13 +102,31 @@ namespace ana{
       static void GetMCParticleList(unsigned int start, TTree *mcparticle_tree, const std::pair<int, int> &unique_event, ParticleList &mcparticle_list);
 
       /**
+       * @brief  get a list of reconstructed particles from track objects, using Raquel's method in uBooNE
+       *
+       * @param  track_list list of tracks in the event
+       * @param  recoparticle_list particle list to fill
+       *
+       */
+      static void GetRecoParticleFromTrackRaquel(const TrackList &track_list, ParticleList &recoparticle_list);
+      
+      /**
+       * @brief  get a list of reconstructed particles from track objects, only tagging muons with the chi2 proton variable
+       *
+       * @param  track_list list of tracks in the event
+       * @param  recoparticle_list particle list to fill
+       *
+       */
+      static void GetRecoParticleFromTrackChi2P(const TrackList &track_list, ParticleList &recoparticle_list);
+      
+      /**
        * @brief  get a list of reconstructed particles from track objects
        *
        * @param  track_list list of tracks in the event
        * @param  recoparticle_list particle list to fill
        *
        */
-      static void GetRecoParticleFromTrack(const TrackList &track_list, ParticleList &recoparticle_list);
+      static void GetRecoParticleFromTrack1Escaping(const TrackList &track_list, ParticleList &recoparticle_list);
  
       /**
        * @brief  get a list of reconstructed particles from track objects using original method
@@ -106,6 +146,47 @@ namespace ana{
        *
        */
       static int GetPdgByChi2(const Track &track);
+  
+      /**
+       * @brief  get the best muon candidate based on the smalleset chi2_mu value
+       *
+       * @param  tracks the track list to loop over
+       * @param  mu_candidates the ids of the muon candidates from the track list
+       *
+       * @return best_id
+       *
+       */
+      static int GetMuonByChi2(const TrackList &tracks, const std::vector<unsigned int> &mu_candidates);
+
+      /**
+       * @brief  get the whether the particle is a muon under the chi^2 proton hypothesis
+       *
+       * @param  track the track to find the pdg of
+       *
+       * @return pdg
+       *
+       */
+      static int GetMuonByChi2Proton(const Track &track);
+      
+      /**
+       * @brief  get the whether the particle is a proton under the chi^2 proton hypothesis
+       *
+       * @param  track the track to find the pdg of
+       *
+       * @return pdg
+       *
+       */
+      static int GetProtonByChi2Proton(const Track &track);
+      
+      /**
+       * @brief  get the whether the particle is a muon candidate under the chi^2 muon hypothesis
+       *
+       * @param  track the track to find the pdg of
+       *
+       * @return pdg
+       *
+       */
+      static int GetPdgByChi2MuonCandidate(const Track &track);
       
       /**
        * @brief  get the particle id based on its PIDA value
@@ -136,38 +217,46 @@ namespace ana{
       
         public : 
           
-        /**
-         * @brief  Constructor
-         *
-         * @param  mc_id_charge mc TrackID corresponding to MCParticle using charge 
-         * @param  mc_id_energy mc TrackID corresponding to MCParticle using energy
-         * @param  mc_id_hits mc TrackID corresponding to MCParticle using hits
-         * @param  pida pida value
-         * @param  chi2_mu chi squared value for the muon fit of the reconstructed dEdx to the expected distribution
-         * @param  chi2_pi chi squared value for the pion fit of the reconstructed dEdx to the expected distribution
-         * @param  chi2_pr chi squared value for the proton fit of the reconstructed dEdx to the expected distribution
-         * @param  chi2_ka chi squared value for the kaon fit of the reconstructed dEdx to the expected distribution
-         * @param  length track length
-         * @param  kinetic_energy track kinetic energy
-         * @param  vertex vertex of the track
-         * @param  end end point of the track
-         *
-         */
-          Track(const int &mc_id_charge, const int &mc_id_energy, const int &mc_id_hits, const float &pida, const float &chi2_mu, const float &chi2_pi, const float &chi2_pr, const float &chi_ka, const float &length, const float &kinetic_energy, const TVector3 &vertex, const TVector3 &end);
+          /**
+           * @brief  Constructor
+           *
+           * @param  mc_id_charge mc TrackID corresponding to MCParticle using charge 
+           * @param  mc_id_energy mc TrackID corresponding to MCParticle using energy
+           * @param  mc_id_hits mc TrackID corresponding to MCParticle using hits
+           * @param  pida pida value
+           * @param  chi2_mu chi squared value for the muon fit of the reconstructed dEdx to the expected distribution
+           * @param  chi2_pi chi squared value for the pion fit of the reconstructed dEdx to the expected distribution
+           * @param  chi2_pr chi squared value for the proton fit of the reconstructed dEdx to the expected distribution
+           * @param  chi2_ka chi squared value for the kaon fit of the reconstructed dEdx to the expected distribution
+           * @param  length track length
+           * @param  kinetic_energy track kinetic energy
+           * @param  vertex vertex of the track
+           * @param  end end point of the track
+           * @param  contained whether or not the reconstructed track is contained within the SBND fiducial volume
+           * @param  one_end_contained whether or not the reconstructed track has one end contained within the SBND fiducial volume
+           *
+           */
+          Track(const int mc_id_charge, const int mc_id_energy, const int mc_id_hits, const int n_hits, const float pida, const float chi2_mu, const float chi2_pi, const float chi2_pr, const float chi2_ka, const float length, const float kinetic_energy, const float mcs_momentum_muon, const float range_momentum_muon, const float range_momentum_proton, const TVector3 &vertex, const TVector3 &end, const bool &contained, const bool &one_end_contained);
 
           // Member variables
-          int      m_mc_id_charge;   ///< mc TrackID corresponding to MCParticle using charge
-          int      m_mc_id_energy;   ///< mc TrackID corresponding to MCParticle using energy
-          int      m_mc_id_hits;     ///< mc TrackID corresponding to MCParticle using hits
-          float    m_pida;           ///< pida value
-          float    m_chi2_mu;        ///< chi squared fit to the muon expected dEdx
-          float    m_chi2_pi;        ///< chi squared fit to the pion expected dEdx
-          float    m_chi2_pr;        ///< chi squared fit to the proton expected dEdx 
-          float    m_chi2_ka;        ///< chi squared fit to the kaon expected dEdx
-          float    m_length;         ///< length of the track
-          float    m_kinetic_energy; ///< kinetic energy of the track
-          TVector3 m_vertex;         ///< vertex of the track         
-          TVector3 m_end;            ///< end of the track 
+          int      m_mc_id_charge;      ///< mc TrackID corresponding to MCParticle using charge
+          int      m_mc_id_energy;      ///< mc TrackID corresponding to MCParticle using energy
+          int      m_mc_id_hits;        ///< mc TrackID corresponding to MCParticle using hits
+          int      m_n_hits;            ///< number of hits in the track
+          float    m_pida;              ///< pida value
+          float    m_chi2_mu;           ///< chi squared fit to the muon expected dEdx
+          float    m_chi2_pi;           ///< chi squared fit to the pion expected dEdx
+          float    m_chi2_pr;           ///< chi squared fit to the proton expected dEdx 
+          float    m_chi2_ka;           ///< chi squared fit to the kaon expected dEdx
+          float    m_length;            ///< length of the track
+          float    m_kinetic_energy;    ///< kinetic energy of the track
+          float    m_mcs_mom_muon;      ///< multiple coulomb scattering momentum is the particle is an escaping muon
+          float    m_range_mom_muon;    ///< range momentum if the particle is a contained muon 
+          float    m_range_mom_proton;  ///< range momentum if the particle is a contained proton
+          TVector3 m_vertex;            ///< vertex of the track         
+          TVector3 m_end;               ///< end of the track
+          bool     m_contained;         ///< whether or not the reconstructed track is contained
+          bool     m_one_end_contained; ///< whether or not the reconstructed track has one contained end
       
       }; // Track
       
@@ -187,9 +276,10 @@ namespace ana{
            * @param  length length of the shower
            *
            */
-          Shower(const TVector3 &vertex, const TVector3 &direction, const float &open_angle, const float &length, const float &energy);
+          Shower(const int n_hits, const TVector3 &vertex, const TVector3 &direction, const float open_angle, const float length, const float energy);
 
           // Member variables
+          int      m_n_hits;     ///< number of hits in the shower
           TVector3 m_vertex;     ///< vertex of the shower 
           TVector3 m_direction;  ///< direction of the shower
           float    m_open_angle; ///< opening angle at the vertex of the shower
@@ -197,15 +287,6 @@ namespace ana{
           float    m_energy;     ///< energy of the shower
 
       }; // Shower
-
-      /*
-       *
-      // Construct event from defined variables above and fill event list
-      Event e();
-      event_list.push_back(e);
-      *
-      */
-
   }; // EventSelectionTool
 } // namespace: selection
 #endif

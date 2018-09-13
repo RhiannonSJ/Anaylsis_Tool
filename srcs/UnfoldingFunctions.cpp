@@ -45,11 +45,11 @@ namespace ana{
           }
           
           // True and reconstructed therefore fill
-          response.Fill(primary_good.GetAngle(), primary_good.GetKineticEnergy(), primary_true.GetAngle(), primary_true.GetKineticEnergy());
+          response.Fill(primary_good.GetCosTheta(), primary_good.GetKineticEnergy(), primary_true.GetCosTheta(), primary_true.GetKineticEnergy());
         }
         else{
           // True, not reconstructed therefore miss
-          response.Miss(primary_true.GetAngle(), primary_true.GetKineticEnergy()); 
+          response.Miss(primary_true.GetCosTheta(), primary_true.GetKineticEnergy()); 
         }
       }
       else{
@@ -67,7 +67,7 @@ namespace ana{
           }
          
           // Not true, reco therefore fake
-          response.Fake(primary_reco.GetAngle(), primary_reco.GetKineticEnergy());
+          response.Fake(primary_reco.GetCosTheta(), primary_reco.GetKineticEnergy());
         }
       }
     }
@@ -99,7 +99,7 @@ namespace ana{
         }
         
         // True
-        true_hist->Fill(primary_true.GetAngle(), primary_true.GetKineticEnergy());
+        true_hist->Fill(primary_true.GetCosTheta(), primary_true.GetKineticEnergy());
                   
       }
       else{
@@ -116,7 +116,7 @@ namespace ana{
             }
           }
          
-          reco_hist->Fill(primary_reco.GetAngle(), primary_reco.GetKineticEnergy());
+          reco_hist->Fill(primary_reco.GetCosTheta(), primary_reco.GetKineticEnergy());
         }
       }
     }

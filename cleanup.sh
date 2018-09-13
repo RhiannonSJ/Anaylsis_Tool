@@ -1,5 +1,5 @@
 #!/bin/bash
 # Clean up directories of dictionary files etc
 
-rm srcs/*_cpp*
-rm test/*_cpp*
+rm -rf srcs/*_cpp*
+rm -rf test/*_cpp*

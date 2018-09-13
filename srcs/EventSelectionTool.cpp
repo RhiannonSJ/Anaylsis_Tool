@@ -7,10 +7,35 @@
 #include <algorithm>
 #include <iterator>
 #include <cmath>
+#include <ctime>
+#include <cstdlib>
 
 namespace ana{
  
-  void EventSelectionTool::LoadEventList(const std::string &file_name, EventList &event_list){
+  void EventSelectionTool::GetTimeLeft(const int start_time, const int total, const unsigned int i){
+    
+    int now = static_cast<int>(time(NULL));
+    int diff = now - start_time;
+    int n_left = total - (i+1);
+    int time_left = std::round(diff/double(i+1) * n_left);
+    int seconds_per_minute = 60; 
+    int seconds_per_hour = 3600; 
+    int seconds_per_day = 86400;
+    int days_left = time_left / (seconds_per_day);
+    int hours_left = (time_left - (days_left * seconds_per_day)) / (seconds_per_hour);
+    int minutes_left = (time_left - (days_left * seconds_per_day) - (hours_left * seconds_per_hour)) / (seconds_per_minute);
+    int seconds_left = time_left - (days_left * seconds_per_day) - (hours_left * seconds_per_hour) - (minutes_left * seconds_per_minute);
+    if(i%2){
+      std::cout << " Estimated time left: " << std::setw(5) << days_left << " days, ";
+      std::cout                             << std::setw(5) << hours_left << " hours, ";
+      std::cout                             << std::setw(5) << minutes_left << " minutes, ";
+      std::cout                             << std::setw(5) << seconds_left << " seconds." << '\r' << flush;
+    }
+  }
+
+  //------------------------------------------------------------------------------------------ 
+ 
+  void EventSelectionTool::LoadEventList(const std::string &file_name, EventList &event_list, const int &file){
  
     TFile f(file_name.c_str());
     TTree *t_event    = (TTree*) f.Get("event_tree");
@@ -22,7 +47,8 @@ namespace ana{
     TBranch *b_time_now        = t_event->GetBranch("time_now");
     TBranch *b_r_vertex        = t_event->GetBranch("r_vertex");
     TBranch *b_t_vertex        = t_event->GetBranch("t_vertex");
-    TBranch *b_t_nuance        = t_event->GetBranch("t_interaction");
+    TBranch *b_t_interaction   = t_event->GetBranch("t_interaction");
+    TBranch *b_t_scatter       = t_event->GetBranch("t_scatter");
     TBranch *b_t_iscc          = t_event->GetBranch("t_iscc");
     TBranch *b_t_nu_pdgcode    = t_event->GetBranch("t_nu_pdgcode");
     TBranch *b_t_charged_pions = t_event->GetBranch("t_charged_pions");
@@ -36,14 +62,14 @@ namespace ana{
     unsigned int start_mcparticles = 0;
 
     for(unsigned int j = 0; j < n_events; ++j){
-    
+
       ParticleList mcparticles;
       ParticleList recoparticles;
       TrackList    tracks;
       ShowerList   showers;
 
       TVector3 r_vertex, t_vertex;
-      unsigned int nuance, pions_ch, pions_neu;
+      unsigned int interaction, pions_ch, pions_neu, scatter;
       int neutrino_pdg;
       bool iscc(false);
       float neu_energy;
@@ -58,7 +84,8 @@ namespace ana{
       t_vertex[0]  = b_t_vertex->GetLeaf("t_vertex")->GetValue(0);
       t_vertex[1]  = b_t_vertex->GetLeaf("t_vertex")->GetValue(1);
       t_vertex[2]  = b_t_vertex->GetLeaf("t_vertex")->GetValue(2);
-      nuance       = b_t_nuance->GetLeaf("t_interaction")->GetValue();
+      interaction  = b_t_interaction->GetLeaf("t_interaction")->GetValue();
+      scatter      = b_t_scatter->GetLeaf("t_scatter")->GetValue();
       iscc         = b_t_iscc->GetLeaf("t_iscc")->GetValue();
       neutrino_pdg = b_t_nu_pdgcode->GetLeaf("t_nu_pdgcode")->GetValue();
       pions_ch     = b_t_charged_pions->GetLeaf("t_charged_pions")->GetValue();
@@ -70,10 +97,13 @@ namespace ana{
       EventSelectionTool::GetTrackList(start_tracks, t_track, event_identification, tracks);
       EventSelectionTool::GetShowerList(start_showers, t_shower, event_identification, showers);
       EventSelectionTool::GetMCParticleList(start_mcparticles, t_particle, event_identification, mcparticles);
-      EventSelectionTool::GetRecoParticleFromTrack(tracks, recoparticles);
+      EventSelectionTool::GetRecoParticleFromTrack1Escaping(tracks, recoparticles);
       EventSelectionTool::GetRecoParticleFromShower(showers, r_vertex, recoparticles);
-      
-      event_list.push_back(Event(mcparticles, recoparticles, nuance, neutrino_pdg, pions_ch, pions_neu, iscc, t_vertex, r_vertex, neu_energy));
+     
+      // Check if any particles should be flipped
+      EventSelectionTool::CheckAndFlip(r_vertex, recoparticles);
+
+      event_list.push_back(Event(mcparticles, recoparticles, interaction, scatter, neutrino_pdg, pions_ch, pions_neu, iscc, t_vertex, r_vertex, neu_energy, file, event_id));
 
       start_tracks      += tracks.size();
       start_showers     += showers.size();
@@ -82,7 +112,25 @@ namespace ana{
   }
 
   //------------------------------------------------------------------------------------------ 
+
+  void EventSelectionTool::CheckAndFlip(const TVector3 &vtx, ParticleList &particles){
   
+    // Loop over reconstructed particles
+    // Check if the end point of the particle is closer to the neutrino vertex than the start
+    // Flip if true
+    for(Particle &p : particles){
+      // Make sure the particle we are looking at is a reconstructed track
+      if(!p.GetFromRecoTrack()) continue;
+    
+      // If the end is closer to the neutrino vertex than the start, flip it
+      float nu_vtx_dist = (vtx - p.GetVertex()).Mag(); 
+      float nu_end_dist = (vtx - p.GetEnd()).Mag(); 
+      if(nu_vtx_dist > nu_end_dist) p.FlipTrack();
+    }
+  }
+
+  //------------------------------------------------------------------------------------------ 
+ 
   void EventSelectionTool::GetUniqueEventList(TTree *event_tree, UniqueEventIdList &unique_event_list){
   
     TBranch *b_event_id = event_tree->GetBranch("event_id");
@@ -120,20 +168,24 @@ namespace ana{
   
   void EventSelectionTool::GetTrackList(unsigned int start, TTree *track_tree, const std::pair<int, int> &unique_event, TrackList &track_list){
    
-    TBranch *b_event_id       = track_tree->GetBranch("event_id");
-    TBranch *b_time_now       = track_tree->GetBranch("time_now");
-    TBranch *b_id_charge      = track_tree->GetBranch("tr_id_charge");
-    TBranch *b_id_energy      = track_tree->GetBranch("tr_id_energy");
-    TBranch *b_id_hits        = track_tree->GetBranch("tr_id_hits");
-    TBranch *b_vertex         = track_tree->GetBranch("tr_vertex");
-    TBranch *b_end            = track_tree->GetBranch("tr_end");
-    TBranch *b_pida           = track_tree->GetBranch("tr_pida");
-    TBranch *b_chi2_mu        = track_tree->GetBranch("tr_chi2_mu");
-    TBranch *b_chi2_pi        = track_tree->GetBranch("tr_chi2_pi");
-    TBranch *b_chi2_pr        = track_tree->GetBranch("tr_chi2_pr");
-    TBranch *b_chi2_ka        = track_tree->GetBranch("tr_chi2_ka");
-    TBranch *b_length         = track_tree->GetBranch("tr_length");
-    TBranch *b_kinetic_energy = track_tree->GetBranch("tr_kinetic_energy");
+    TBranch *b_event_id         = track_tree->GetBranch("event_id");
+    TBranch *b_time_now         = track_tree->GetBranch("time_now");
+    TBranch *b_id_charge        = track_tree->GetBranch("tr_id_charge");
+    TBranch *b_id_energy        = track_tree->GetBranch("tr_id_energy");
+    TBranch *b_id_hits          = track_tree->GetBranch("tr_id_hits");
+    TBranch *b_n_hits           = track_tree->GetBranch("tr_n_hits");
+    TBranch *b_vertex           = track_tree->GetBranch("tr_vertex");
+    TBranch *b_end              = track_tree->GetBranch("tr_end");
+    TBranch *b_pida             = track_tree->GetBranch("tr_pida");
+    TBranch *b_chi2_mu          = track_tree->GetBranch("tr_chi2_mu");
+    TBranch *b_chi2_pi          = track_tree->GetBranch("tr_chi2_pi");
+    TBranch *b_chi2_pr          = track_tree->GetBranch("tr_chi2_pr");
+    TBranch *b_chi2_ka          = track_tree->GetBranch("tr_chi2_ka");
+    TBranch *b_length           = track_tree->GetBranch("tr_length");
+    TBranch *b_kinetic_energy   = track_tree->GetBranch("tr_kinetic_energy");
+    TBranch *b_mcs_mom_muon     = track_tree->GetBranch("tr_mcs_mom_muon");
+    TBranch *b_range_mom_muon   = track_tree->GetBranch("tr_range_mom_muon");
+    TBranch *b_range_mom_proton = track_tree->GetBranch("tr_range_mom_proton");
     
     unsigned int n_entries = track_tree->GetEntries();
 
@@ -148,28 +200,86 @@ namespace ana{
       
       double temp_vertex[3];
       double temp_end[3];
-      
-      int id_charge        = b_id_charge->GetLeaf("tr_id_charge")->GetValue();
-      int id_energy        = b_id_energy->GetLeaf("tr_id_energy")->GetValue();
-      int id_hits          = b_id_hits->GetLeaf("tr_id_hits")->GetValue();
-      temp_vertex[0]       = b_vertex->GetLeaf("tr_vertex")->GetValue(0);
-      temp_vertex[1]       = b_vertex->GetLeaf("tr_vertex")->GetValue(1);
-      temp_vertex[2]       = b_vertex->GetLeaf("tr_vertex")->GetValue(2);
-      temp_end[0]          = b_end->GetLeaf("tr_end")->GetValue(0);
-      temp_end[1]          = b_end->GetLeaf("tr_end")->GetValue(1);
-      temp_end[2]          = b_end->GetLeaf("tr_end")->GetValue(2);
-      float pida           = b_pida->GetLeaf("tr_pida")->GetValue();
-      float chi2_mu        = b_chi2_mu->GetLeaf("tr_chi2_mu")->GetValue();
-      float chi2_pi        = b_chi2_pi->GetLeaf("tr_chi2_pi")->GetValue();
-      float chi2_pr        = b_chi2_pr->GetLeaf("tr_chi2_pr")->GetValue();
-      float chi2_ka        = b_chi2_ka->GetLeaf("tr_chi2_ka")->GetValue();
-      float length         = b_length->GetLeaf("tr_length")->GetValue();
-      float kinetic_energy = b_kinetic_energy->GetLeaf("tr_kinetic_energy")->GetValue();
+
+      int id_charge          = b_id_charge->GetLeaf("tr_id_charge")->GetValue();
+      int id_energy          = b_id_energy->GetLeaf("tr_id_energy")->GetValue();
+      int id_hits            = b_id_hits->GetLeaf("tr_id_hits")->GetValue();
+      int n_hits             = b_n_hits->GetLeaf("tr_n_hits")->GetValue();
+      temp_vertex[0]         = b_vertex->GetLeaf("tr_vertex")->GetValue(0);
+      temp_vertex[1]         = b_vertex->GetLeaf("tr_vertex")->GetValue(1);
+      temp_vertex[2]         = b_vertex->GetLeaf("tr_vertex")->GetValue(2);
+      temp_end[0]            = b_end->GetLeaf("tr_end")->GetValue(0);
+      temp_end[1]            = b_end->GetLeaf("tr_end")->GetValue(1);
+      temp_end[2]            = b_end->GetLeaf("tr_end")->GetValue(2);
+      float pida             = b_pida->GetLeaf("tr_pida")->GetValue();
+      float chi2_mu          = b_chi2_mu->GetLeaf("tr_chi2_mu")->GetValue();
+      float chi2_pi          = b_chi2_pi->GetLeaf("tr_chi2_pi")->GetValue();
+      float chi2_pr          = b_chi2_pr->GetLeaf("tr_chi2_pr")->GetValue();
+      float chi2_ka          = b_chi2_ka->GetLeaf("tr_chi2_ka")->GetValue();
+      float length           = b_length->GetLeaf("tr_length")->GetValue();
+      float kinetic_energy   = b_kinetic_energy->GetLeaf("tr_kinetic_energy")->GetValue();
+      float mcs_mom_muon     = b_mcs_mom_muon->GetLeaf("tr_mcs_mom_muon")->GetValue();
+      float range_mom_muon   = b_range_mom_muon->GetLeaf("tr_range_mom_muon")->GetValue();
+      float range_mom_proton = b_range_mom_proton->GetLeaf("tr_range_mom_proton")->GetValue();
 
       TVector3 vertex(temp_vertex);
       TVector3 end(temp_end);
+      
+      float vertex_x = temp_vertex[0];                        
+      float vertex_y = temp_vertex[1];                        
+      float vertex_z = temp_vertex[2];                        
+      float end_x    = temp_end[0];                        
+      float end_y    = temp_end[1];                        
+      float end_z    = temp_end[2];                        
+                                                                                   
+      // Co-ordinate offset in cm
+      int sbnd_length_x = 400;
+      int sbnd_length_y = 400;
+      int sbnd_length_z = 500;
+      
+      int sbnd_offset_x = 200;
+      int sbnd_offset_y = 200;
+      int sbnd_offset_z = 0;
 
-      track_list.push_back(Track(id_charge, id_energy, id_hits, pida, chi2_mu, chi2_pi, chi2_pr, chi2_ka, length, kinetic_energy, vertex, end));
+      int sbnd_border_x = 10;
+      int sbnd_border_y = 20;
+      int sbnd_border_z = 10;
+
+      bool not_contained = 
+        (     (vertex_x > (sbnd_length_x - sbnd_offset_x)) 
+           || (vertex_x < (-sbnd_offset_x))          
+           || (vertex_y > (sbnd_length_y - sbnd_offset_y)) 
+           || (vertex_y < (-sbnd_offset_y + sbnd_border_y))          
+           || (vertex_z > (sbnd_length_z - sbnd_offset_z)) 
+           || (vertex_z < (-sbnd_offset_z))
+           || (end_x    > (sbnd_length_x - sbnd_offset_x)) 
+           || (end_x    < (-sbnd_offset_x))          
+           || (end_y    > (sbnd_length_y - sbnd_offset_y)) 
+           || (end_y    < (-sbnd_offset_y))          
+           || (end_z    > (sbnd_length_z - sbnd_offset_z)) 
+           || (end_z    < (-sbnd_offset_z))); 
+
+      bool does_vtx_escape = 
+        (     (vertex_x > (sbnd_length_x - sbnd_offset_x)) 
+           || (vertex_x < (-sbnd_offset_x))          
+           || (vertex_y > (sbnd_length_y - sbnd_offset_y)) 
+           || (vertex_y < (-sbnd_offset_y + sbnd_border_y))          
+           || (vertex_z > (sbnd_length_z - sbnd_offset_z)) 
+           || (vertex_z < (-sbnd_offset_z)));
+
+      bool does_end_escape = 
+        (     (end_x    > (sbnd_length_x - sbnd_offset_x)) 
+           || (end_x    < (-sbnd_offset_x))          
+           || (end_y    > (sbnd_length_y - sbnd_offset_y)) 
+           || (end_y    < (-sbnd_offset_y))          
+           || (end_z    > (sbnd_length_z - sbnd_offset_z)) 
+           || (end_z    < (-sbnd_offset_z))); 
+
+      bool one_end_escapes = true;
+      if(does_vtx_escape && does_end_escape) one_end_escapes   = false;
+      if(!does_vtx_escape && !does_end_escape) one_end_escapes = false;
+
+      track_list.push_back(Track(id_charge, id_energy, id_hits, n_hits, pida, chi2_mu, chi2_pi, chi2_pr, chi2_ka, length, kinetic_energy, mcs_mom_muon, range_mom_muon, range_mom_proton,vertex, end, !not_contained, one_end_escapes));
     
     } 
   }
@@ -179,6 +289,7 @@ namespace ana{
   
     TBranch *b_event_id   = shower_tree->GetBranch("event_id");
     TBranch *b_time_now   = shower_tree->GetBranch("time_now");
+    TBranch *b_n_hits     = shower_tree->GetBranch("sh_n_hits");
     TBranch *b_vertex     = shower_tree->GetBranch("sh_start");
     TBranch *b_direction  = shower_tree->GetBranch("sh_direction");
     TBranch *b_open_angle = shower_tree->GetBranch("sh_open_angle");
@@ -208,11 +319,12 @@ namespace ana{
       float open_angle  = b_open_angle->GetLeaf("sh_open_angle")->GetValue();
       float length      = b_length->GetLeaf("sh_length")->GetValue();
       float energy      = b_energy->GetLeaf("sh_energy")->GetValue();
+      int n_hits        = b_n_hits->GetLeaf("sh_n_hits")->GetValue();
  
       TVector3 vertex(temp_vertex);
       TVector3 direction(temp_direction);
 
-      shower_list.push_back(Shower(vertex, direction, open_angle, length, energy));
+      shower_list.push_back(Shower(n_hits, vertex, direction, open_angle, length, energy));
     } 
   }
 
@@ -223,7 +335,9 @@ namespace ana{
     TBranch *b_event_id = mcparticle_tree->GetBranch("event_id");
     TBranch *b_time_now = mcparticle_tree->GetBranch("time_now");
     TBranch *b_id       = mcparticle_tree->GetBranch("p_id");
+    TBranch *b_n_hits   = mcparticle_tree->GetBranch("p_n_hits");
     TBranch *b_pdgcode  = mcparticle_tree->GetBranch("p_pdgcode");
+    TBranch *b_status   = mcparticle_tree->GetBranch("p_status");
     TBranch *b_mass     = mcparticle_tree->GetBranch("p_mass");
     TBranch *b_energy   = mcparticle_tree->GetBranch("p_energy");
     TBranch *b_vertex   = mcparticle_tree->GetBranch("p_vertex");
@@ -247,6 +361,8 @@ namespace ana{
       
       int id                = b_id->GetLeaf("p_id")->GetValue();
       int pdgcode           = b_pdgcode->GetLeaf("p_pdgcode")->GetValue();
+      int statuscode        = b_status->GetLeaf("p_status")->GetValue();
+      int n_hits            = b_n_hits->GetLeaf("p_n_hits")->GetValue();
       float mass            = b_mass->GetLeaf("p_mass")->GetValue();
       float energy          = b_energy->GetLeaf("p_energy")->GetValue();
       temp_vertex[0]        = b_vertex->GetLeaf("p_vertex")->GetValue(0);
@@ -263,23 +379,137 @@ namespace ana{
       TVector3 end(temp_end);
       TVector3 momentum(temp_momentum);
 
-      mcparticle_list.push_back(Particle(id, pdgcode, mass, energy, vertex, end, momentum));
+      mcparticle_list.push_back(Particle(id, pdgcode, statuscode, n_hits, mass, energy, vertex, end, momentum));
       
     }
   }
 
   //------------------------------------------------------------------------------------------ 
-  
-  void EventSelectionTool::GetRecoParticleFromTrack(const TrackList &track_list, ParticleList &recoparticle_list){
- 
+
+  void EventSelectionTool::GetRecoParticleFromTrackRaquel(const TrackList &track_list, ParticleList &recoparticle_list){
+
     // Assign ridiculously short length to initiate the longest track length
     float longest_track_length      = -std::numeric_limits<float>::max();
     unsigned int longest_track_id   =  std::numeric_limits<unsigned int>::max();
-    
+  
+    // Get the longest track id
     for(unsigned int i = 0; i < track_list.size(); ++i){
-    
       const Track &candidate(track_list[i]);
+      // Get the lengths of the tracks and find the longest track and compare to the rest of
+      // the lengths
+      if(candidate.m_length > longest_track_length) {
+        longest_track_length = candidate.m_length;
+        longest_track_id     = i;
+      }
+    }
+    bool always_longest(true);
+    // Loop over track list
+    for(unsigned int id = 0; id < track_list.size(); ++id){
+      // Find out if the longest track is always 1.5x longer than all the others in the event
+      const Track &track(track_list[id]);
+      if(track.m_length*1.5 >= longest_track_length && id != longest_track_id) always_longest = false;
+    }
+   
+    // Muon candidates 
+    std::vector<unsigned int> mu_candidates;
 
+    // Check if exactly 1 track escapes and that it is the longest track
+    bool only_longest_escapes = false;
+    bool none_escape = true;
+    bool longest_escapes = false;
+    unsigned int n_escaping = 0;
+    for(unsigned int i = 0; i < track_list.size(); ++i){
+      const Track &trk(track_list[i]);
+      if(i == longest_track_id) longest_escapes = true;
+      if(trk.m_one_end_contained) n_escaping++;
+    }
+    if(n_escaping == 1 && longest_escapes) only_longest_escapes = true;
+    if(n_escaping != 0) none_escape = false;
+
+    // Loop over track list
+    for(unsigned int id = 0; id < track_list.size(); ++id){
+      const Track &track(track_list[id]);
+      // If exactly one particle escapes, call it the muon
+      // Then identify protons
+      // Then everything else
+      if(only_longest_escapes){
+        if(track.m_one_end_contained)
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 13, track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton, track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+        else if(EventSelectionTool::GetProtonByChi2Proton(track) == 2212)
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 2212, track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton, track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+        else
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton, track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi)); 
+      }
+      else if(!none_escape) continue;
+      else{
+        // If the Chi2 Proton hypothesis gives proton, call the track a proton
+        // Otherwise, call it a muon candidate
+        if(EventSelectionTool::GetProtonByChi2Proton(track) == 2212)
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 2212, track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+        else if(EventSelectionTool::GetMuonByChi2Proton(track) == 13 || (id == longest_track_id && always_longest) || track.m_one_end_contained)
+          mu_candidates.push_back(id);
+        else
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+      }
+    }
+
+    // If the muon was found by length, this will return
+    if(mu_candidates.size() == 0) return;
+    if(mu_candidates.size() == 1) {
+      const Track &muon(track_list[mu_candidates[0]]);
+      recoparticle_list.push_back(Particle(muon.m_mc_id_charge, muon.m_mc_id_energy, muon.m_mc_id_hits, 13, muon.m_n_hits, muon.m_kinetic_energy, muon.m_mcs_mom_muon, muon.m_range_mom_muon, muon.m_range_mom_proton,  muon.m_length, muon.m_vertex, muon.m_end, muon.m_chi2_pr, muon.m_chi2_mu, muon.m_chi2_pi));
+      return;
+    }
+    
+    // If more than one muon candidate exists
+    bool foundTheMuon(false);
+    unsigned int muonID = std::numeric_limits<unsigned int>::max();
+
+    for(unsigned int i = 0; i < mu_candidates.size(); ++i){
+      unsigned int id = mu_candidates[i];
+      const Track &candidate(track_list[id]);
+      if(longest_track_id == id && always_longest) {
+        muonID = id;
+        foundTheMuon = true;
+        break;
+      }
+    }
+    if(!foundTheMuon) {
+      // Find the smallest chi^2 under the muon hypothesis
+      muonID = EventSelectionTool::GetMuonByChi2(track_list, mu_candidates);
+      if(muonID != std::numeric_limits<unsigned int>::max()) foundTheMuon = true;
+      else throw 10;
+    }
+
+    const Track &muon(track_list[muonID]);
+    recoparticle_list.push_back(Particle(muon.m_mc_id_charge, muon.m_mc_id_energy, muon.m_mc_id_hits, 13, muon.m_n_hits, muon.m_kinetic_energy, muon.m_mcs_mom_muon, muon.m_range_mom_muon, muon.m_range_mom_proton,  muon.m_length, muon.m_vertex, muon.m_end, muon.m_chi2_pr, muon.m_chi2_mu, muon.m_chi2_pi));
+    
+    for(unsigned int id = 0; id < mu_candidates.size(); ++id){
+      if(id == muonID) continue;
+      const Track &track(track_list[id]);
+      recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi)); 
+    } 
+  }
+
+  //------------------------------------------------------------------------------------------ 
+
+  void EventSelectionTool::GetRecoParticleFromTrackChi2P(const TrackList &track_list, ParticleList &recoparticle_list){
+
+    // Assign ridiculously short length to initiate the longest track length
+    float longest_track_length      = -std::numeric_limits<float>::max();
+    unsigned int longest_track_id   =  std::numeric_limits<unsigned int>::max();
+   
+    // Check if exactly 1 track escapes
+    bool exactly_one_escapes = false;
+    unsigned int n_escaping = 0;
+    for(unsigned int i = 0; i < track_list.size(); ++i){
+      const Track &trk(track_list[i]);
+      if(trk.m_one_end_contained) n_escaping++;
+    }
+    if(n_escaping == 1) exactly_one_escapes = true;
+
+    for(unsigned int i = 0; i < track_list.size(); ++i){
+      const Track &candidate(track_list[i]);
       // Get the lengths of the tracks and find the longest track and compare to the rest of
       // the lengths
       if(candidate.m_length > longest_track_length) {
@@ -289,94 +519,177 @@ namespace ana{
     }
 
     bool always_longest(true);
-
     // Loop over track list
     for(unsigned int id = 0; id < track_list.size(); ++id){
-
+      // Find out if the longest track is always 1.5x longer than all the others in the event
       const Track &track(track_list[id]);
       if(track.m_length*1.5 >= longest_track_length && id != longest_track_id) always_longest = false;
-
     }
    
     // Muon candidates 
     std::vector<unsigned int> mu_candidates;
-
     // Loop over track list
     for(unsigned int id = 0; id < track_list.size(); ++id){
-
       const Track &track(track_list[id]);
-
-      // Use PIDA values to find pions, protons and kaons
-      int pida_pdg = EventSelectionTool::GetPdgByPIDA(track);
-
-      // If the muon has not been found by length and its PIDA value is 13
-      // Call the track a candidate muon
-      if(pida_pdg == 13 || id == longest_track_id || always_longest) { 
-        mu_candidates.push_back(id);
+      // If exactly one particle escapes, call it the muon
+      // Then identify protons
+      // Then everything else
+      if(exactly_one_escapes){
+        if(track.m_one_end_contained) 
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 13, track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+        else if(EventSelectionTool::GetProtonByChi2Proton(track) == 2212)
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 2212, track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+        else
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi)); 
       }
-      else if(track.m_length < 30) 
-        recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 2212, track.m_kinetic_energy, track.m_length, track.m_vertex, track.m_end));
-      else if(pida_pdg == 211 || pida_pdg == 321 || pida_pdg == 2212) 
-        recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, pida_pdg, track.m_kinetic_energy, track.m_length, track.m_vertex, track.m_end));
-      else
-        recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_kinetic_energy, track.m_length, track.m_vertex, track.m_end)); 
+      else{
+        // If the Chi2 Proton hypothesis gives proton, call the track a proton
+        // Otherwise, call it a muon candidate
+        if(EventSelectionTool::GetProtonByChi2Proton(track) == 2212)
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 2212, track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+        else if(EventSelectionTool::GetMuonByChi2Proton(track) == 13 || (id == longest_track_id && always_longest) || track.m_one_end_contained)
+          mu_candidates.push_back(id);
+        else
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+      }
     }
 
     // If the muon was found by length, this will return
     if(mu_candidates.size() == 0) return;
     if(mu_candidates.size() == 1) {
       const Track &muon(track_list[mu_candidates[0]]);
-      recoparticle_list.push_back(Particle(muon.m_mc_id_charge, muon.m_mc_id_energy, muon.m_mc_id_hits, 13, muon.m_kinetic_energy, muon.m_length, muon.m_vertex, muon.m_end));
+      recoparticle_list.push_back(Particle(muon.m_mc_id_charge, muon.m_mc_id_energy, muon.m_mc_id_hits, 13, muon.m_n_hits, muon.m_kinetic_energy, muon.m_mcs_mom_muon, muon.m_range_mom_muon, muon.m_range_mom_proton,  muon.m_length, muon.m_vertex, muon.m_end, muon.m_chi2_pr, muon.m_chi2_mu, muon.m_chi2_pi));
       return;
     }
     
     // If more than one muon candidate exists
-    bool foundOneMuon(false);
+    bool foundTheMuon(false);
     unsigned int muonID = std::numeric_limits<unsigned int>::max();
 
     for(unsigned int i = 0; i < mu_candidates.size(); ++i){
-    
       unsigned int id = mu_candidates[i];
       const Track &candidate(track_list[id]);
-
-      if(longest_track_id == id && candidate.m_chi2_mu >= 0.25 && candidate.m_chi2_mu <= 4 && always_longest) {
-      
-        if(!foundOneMuon) {
-          muonID = id;
-          foundOneMuon = true;
-        }
-        else{
-          foundOneMuon = false;
-          break;
-        }
+      if(longest_track_id == id && always_longest) {
+        muonID = id;
+        foundTheMuon = true;
+        break;
       }
     }
-    if(!foundOneMuon) {
-    
-      unsigned int best_id  = std::numeric_limits<unsigned int>::max();
+    if(!foundTheMuon) {
+      // Find the smallest chi^2 under the muon hypothesis
+      muonID = EventSelectionTool::GetMuonByChi2(track_list, mu_candidates);
+      if(muonID != std::numeric_limits<unsigned int>::max()) foundTheMuon = true;
+      else throw 10;
+    }
 
-      for(unsigned int i = 0; i < mu_candidates.size(); ++i){
-
-        unsigned int id = mu_candidates[i];
-        const Track &candidate(track_list[id]);
-
-        if(id == longest_track_id) {
-          best_id = id;
-          break;
-        }
-      }
-      muonID = best_id;
-    } 
-    
     const Track &muon(track_list[muonID]);
-    recoparticle_list.push_back(Particle(muon.m_mc_id_charge, muon.m_mc_id_energy, muon.m_mc_id_hits, 13, muon.m_kinetic_energy, muon.m_length, muon.m_vertex, muon.m_end));
-
+    recoparticle_list.push_back(Particle(muon.m_mc_id_charge, muon.m_mc_id_energy, muon.m_mc_id_hits, 13, muon.m_n_hits, muon.m_kinetic_energy, muon.m_mcs_mom_muon, muon.m_range_mom_muon, muon.m_range_mom_proton,  muon.m_length, muon.m_vertex, muon.m_end, muon.m_chi2_pr, muon.m_chi2_mu, muon.m_chi2_pi));
+    
     for(unsigned int id = 0; id < mu_candidates.size(); ++id){
-      
       if(id == muonID) continue;
-      
       const Track &track(track_list[id]);
-      recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_kinetic_energy, track.m_length, track.m_vertex, track.m_end)); 
+      recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi)); 
+    } 
+  }
+
+  //------------------------------------------------------------------------------------------ 
+
+  void EventSelectionTool::GetRecoParticleFromTrack1Escaping(const TrackList &track_list, ParticleList &recoparticle_list){
+
+    // Assign ridiculously short length to initiate the longest track length
+    float longest_track_length      = -std::numeric_limits<float>::max();
+    unsigned int longest_track_id   =  std::numeric_limits<unsigned int>::max();
+   
+    // Check if exactly 1 track escapes
+    bool exactly_one_escapes = false;
+    unsigned int n_escaping = 0;
+    for(unsigned int i = 0; i < track_list.size(); ++i){
+      const Track &trk(track_list[i]);
+      if(trk.m_one_end_contained) n_escaping++;
+    }
+    if(n_escaping == 1) exactly_one_escapes = true;
+
+    for(unsigned int i = 0; i < track_list.size(); ++i){
+      const Track &candidate(track_list[i]);
+      // Get the lengths of the tracks and find the longest track and compare to the rest of
+      // the lengths
+      if(candidate.m_length > longest_track_length) {
+        longest_track_length = candidate.m_length;
+        longest_track_id     = i;
+      }
+    }
+
+    bool always_longest(true);
+    // Loop over track list
+    for(unsigned int id = 0; id < track_list.size(); ++id){
+      // Find out if the longest track is always 1.5x longer than all the others in the event
+      const Track &track(track_list[id]);
+      if(track.m_length*1.5 >= longest_track_length && id != longest_track_id) always_longest = false;
+    }
+   
+    // Muon candidates 
+    std::vector<unsigned int> mu_candidates;
+    // Loop over track list
+    for(unsigned int id = 0; id < track_list.size(); ++id){
+      const Track &track(track_list[id]);
+      // If exactly one particle escapes, call it the muon
+      // Then identify protons
+      // Then everything else
+      if(exactly_one_escapes){
+        if(track.m_one_end_contained) 
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 13, track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+        else if(EventSelectionTool::GetProtonByChi2Proton(track) == 2212)
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 2212, track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+        else
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi)); 
+      }
+      else{
+        // If the Chi2 Proton hypothesis gives proton, call the track a proton
+        // Otherwise, call it a muon candidate
+        if(EventSelectionTool::GetProtonByChi2Proton(track) == 2212)
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, 2212, track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+        else if(EventSelectionTool::GetPdgByChi2MuonCandidate(track) == 13 || (id == longest_track_id && always_longest))
+          mu_candidates.push_back(id);
+        else
+          recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi));
+      }
+    }
+
+    // If the muon was found by length, this will return
+    if(mu_candidates.size() == 0) return;
+    if(mu_candidates.size() == 1) {
+      const Track &muon(track_list[mu_candidates[0]]);
+      recoparticle_list.push_back(Particle(muon.m_mc_id_charge, muon.m_mc_id_energy, muon.m_mc_id_hits, 13, muon.m_n_hits, muon.m_kinetic_energy, muon.m_mcs_mom_muon, muon.m_range_mom_muon, muon.m_range_mom_proton,  muon.m_length, muon.m_vertex, muon.m_end, muon.m_chi2_pr, muon.m_chi2_mu, muon.m_chi2_pi));
+      return;
+    }
+    
+    // If more than one muon candidate exists
+    bool foundTheMuon(false);
+    unsigned int muonID = std::numeric_limits<unsigned int>::max();
+
+    for(unsigned int i = 0; i < mu_candidates.size(); ++i){
+      unsigned int id = mu_candidates[i];
+      const Track &candidate(track_list[id]);
+      if(longest_track_id == id && always_longest) {
+        muonID = id;
+        foundTheMuon = true;
+        break;
+      }
+    }
+    if(!foundTheMuon) {
+      // Find the smallest chi^2 under the muon hypothesis
+      muonID = EventSelectionTool::GetMuonByChi2(track_list, mu_candidates);
+      if(muonID != std::numeric_limits<unsigned int>::max()) foundTheMuon = true;
+      else throw 10;
+    }
+
+    const Track &muon(track_list[muonID]);
+    recoparticle_list.push_back(Particle(muon.m_mc_id_charge, muon.m_mc_id_energy, muon.m_mc_id_hits, 13, muon.m_n_hits, muon.m_kinetic_energy, muon.m_mcs_mom_muon, muon.m_range_mom_muon, muon.m_range_mom_proton,  muon.m_length, muon.m_vertex, muon.m_end, muon.m_chi2_pr, muon.m_chi2_mu, muon.m_chi2_pi));
+    
+    for(unsigned int id = 0; id < mu_candidates.size(); ++id){
+      if(id == muonID) continue;
+      const Track &track(track_list[id]);
+      recoparticle_list.push_back(Particle(track.m_mc_id_charge, track.m_mc_id_energy, track.m_mc_id_hits, EventSelectionTool::GetPdgByChi2(track), track.m_n_hits, track.m_kinetic_energy, track.m_mcs_mom_muon, track.m_range_mom_muon, track.m_range_mom_proton,  track.m_length, track.m_vertex, track.m_end, track.m_chi2_pr, track.m_chi2_mu, track.m_chi2_pi)); 
     } 
   }
 
@@ -408,9 +721,11 @@ namespace ana{
       std::vector<unsigned int> candidate_id_for_pair;
       std::vector<TVector3> decay_point;
       std::vector<float> c_distance;
+      std::vector<int> total_hits;
       candidate_id_for_pair.clear();
       decay_point.clear();
       c_distance.clear();
+      total_hits.clear();
 
       for( unsigned int j = i+1; j < shower_list.size(); ++j){
         // If we are only looking at a single photon, continue
@@ -460,8 +775,8 @@ namespace ana{
           candidate_id_for_pair.push_back(j);
           decay_point.push_back(d_closest);
           c_distance.push_back(mag_d_closest);
+          total_hits.push_back(shower_list[i].m_n_hits + shower_list[j].m_n_hits);
         }
-
       }
   
       if(candidate_id_for_pair.size() == 0) continue;
@@ -472,14 +787,15 @@ namespace ana{
         if((reco_vertex - decay_point[0]).Mag() > 15) continue;
 
         // push back a pi0 corresponding to the two photons
-        recoparticle_list.push_back(Particle(111,reco_vertex,decay_point[0]));
+        recoparticle_list.push_back(Particle(111, total_hits[0], reco_vertex,decay_point[0]));
       } 
       else{
       
         // Find the minimum distance
         std::vector<float>::iterator min = std::min_element(c_distance.begin(), c_distance.end());
         TVector3 best_decay_point = decay_point[std::distance(c_distance.begin(), min)];
-        recoparticle_list.push_back(Particle(111,reco_vertex,best_decay_point));
+        int best_total_hits       = total_hits[std::distance(c_distance.begin(), min)];
+        recoparticle_list.push_back(Particle(111,best_total_hits, reco_vertex, best_decay_point));
         used_photon.push_back(candidate_id_for_pair[std::distance(c_distance.begin(), min)]);
       
       }
@@ -509,6 +825,53 @@ namespace ana{
       }
     } 
     return best_pdg;
+  }
+  
+  //------------------------------------------------------------------------------------------ 
+  
+  int EventSelectionTool::GetMuonByChi2(const TrackList &tracks, const std::vector<unsigned int> &mu_candidates){
+
+    // Loop over muon candidates and find smallest corresponding chi2_mu
+    float min_chi2_mu = std::numeric_limits<float>::max();
+    unsigned int min_chi2_id = std::numeric_limits<unsigned int>::max();
+
+    // Find the smallest chi^2 under the muon hypothesis
+    for(unsigned int i = 0; i < mu_candidates.size(); ++i){
+      unsigned int id = mu_candidates[i];
+      const Track &candidate(tracks[id]);
+      if(candidate.m_chi2_mu < min_chi2_mu) {
+        min_chi2_mu = candidate.m_chi2_mu; 
+        min_chi2_id = id;
+      }
+    }
+    return min_chi2_id;
+  }
+  
+  //------------------------------------------------------------------------------------------ 
+  
+  int EventSelectionTool::GetProtonByChi2Proton(const Track &track){
+
+    // Limit based on particle gun plots of muon and proton vs proton chi^2
+    if(track.m_chi2_pr < 80) return 2212;
+    return std::numeric_limits<int>::max();
+  }
+  
+  //------------------------------------------------------------------------------------------ 
+  
+  int EventSelectionTool::GetMuonByChi2Proton(const Track &track){
+
+    // Limit based on particle gun plots of muon and proton vs proton chi^2
+    if(track.m_chi2_pr > 80) return 13;
+    return std::numeric_limits<int>::max();
+  }
+  
+  //------------------------------------------------------------------------------------------ 
+  
+  int EventSelectionTool::GetPdgByChi2MuonCandidate(const Track &track){
+
+    // Limit based on particle gun plots of muon and proton vs proton chi^2
+    if(track.m_chi2_mu < 16) return 13;
+    return std::numeric_limits<int>::max();
   }
   
   //------------------------------------------------------------------------------------------ 
@@ -553,10 +916,11 @@ namespace ana{
   
   //------------------------------------------------------------------------------------------ 
   
-  EventSelectionTool::Track::Track(const int &mc_id_charge, const int &mc_id_energy, const int &mc_id_hits, const float &pida, const float &chi2_mu, const float &chi2_pi, const float &chi2_pr, const float &chi2_ka, const float &length, const float &kinetic_energy, const TVector3 &vertex, const TVector3 &end) :
+  EventSelectionTool::Track::Track(const int mc_id_charge, const int mc_id_energy, const int mc_id_hits, const int n_hits, const float pida, const float chi2_mu, const float chi2_pi, const float chi2_pr, const float chi2_ka, const float length, const float kinetic_energy, const float mcs_momentum_muon, const float range_momentum_muon, const float range_momentum_proton, const TVector3 &vertex, const TVector3 &end, const bool &contained, const bool &one_end_contained) :
     m_mc_id_charge(mc_id_charge),
     m_mc_id_energy(mc_id_energy),
     m_mc_id_hits(mc_id_hits),
+    m_n_hits(n_hits),
     m_pida(pida),
     m_chi2_mu(chi2_mu),
     m_chi2_pi(chi2_pi),
@@ -564,16 +928,22 @@ namespace ana{
     m_chi2_ka(chi2_ka),
     m_length(length),
     m_kinetic_energy(kinetic_energy),
+    m_mcs_mom_muon(mcs_momentum_muon),
+    m_range_mom_muon(range_momentum_muon),
+    m_range_mom_proton(range_momentum_proton),
     m_vertex(vertex),
-    m_end(end) {}
+    m_end(end),
+    m_contained(contained),
+    m_one_end_contained(one_end_contained){}
 
   //------------------------------------------------------------------------------------------ 
   
-  EventSelectionTool::Shower::Shower(const TVector3 &vertex, const TVector3 &direction, const float &open_angle, const float &length, const float &energy) :
+  EventSelectionTool::Shower::Shower(const int n_hits, const TVector3 &vertex, const TVector3 &direction, const float open_angle, const float length, const float energy) :
+    m_n_hits(n_hits),
     m_vertex(vertex),
     m_direction(direction),
     m_open_angle(open_angle),
     m_length(length),
     m_energy(energy/3.) {}
 
-} // namespace: selection
+} // namespace: ana

@@ -1,6 +1,6 @@
 //=====================================================================-*-C++-*-
 // File and Version Information:
-//      $Id$
+//      $Id: RooUnfoldResponse.cxx 353 2017-02-10 15:04:26Z T.J.Adye@rl.ac.uk $
 //
 // Description:
 //      Response Matrix
@@ -29,6 +29,7 @@ END_HTML */
 
 #include "TClass.h"
 #include "TNamed.h"
+#include "TBuffer.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"

@@ -1,6 +1,6 @@
 //=====================================================================-*-C++-*-
 // File and Version Information:
-//      $Id$
+//      $Id: RooUnfoldTUnfold.h 320 2011-10-25 14:06:07Z T.J.Adye $
 //
 // Description:
 //      Unfolding class using TUnfold from ROOT to do the actual unfolding.

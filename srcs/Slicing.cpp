@@ -344,38 +344,32 @@ namespace ana{
       int res        = 0;
       int dis        = 0;
       int coh        = 0;
-      int singlepi   = 0;
       int other      = 0;
       
       // Find the physical process of the event and enumerate according to 
-      //  QE           : 0
-      //  MEC          : 1
-      //  RES          : 2
+      //  QE           : 1
+      //  MEC          : 10
+      //  RES          : 4
       //  DIS          : 3
-      //  COH          : 4
-      //  Non RES, 1pi : 5
-      //  Other        : 6
+      //  COH          : 5
       for ( int i = 0; i < n_entries; ++i ){
       
-        if( reco_events[i].GetPhysicalProcess() == 0 ){
+        if( reco_events[i].GetPhysicalProcess() == 1 ){
           ++qel; 
         }
-        else if( reco_events[i].GetPhysicalProcess() == 1 ){
+        else if( reco_events[i].GetPhysicalProcess() == 10 ){
           ++mec; 
         }
-        else if( reco_events[i].GetPhysicalProcess() == 2 ){
+        else if( reco_events[i].GetPhysicalProcess() == 4 ){
           ++res; 
         }
         else if( reco_events[i].GetPhysicalProcess() == 3 ){
           ++dis; 
         }
-        else if( reco_events[i].GetPhysicalProcess() == 4 ){
+        else if( reco_events[i].GetPhysicalProcess() == 5 ){
           ++coh; 
         }
-        else if( reco_events[i].GetPhysicalProcess() == 5 ){
-          ++singlepi; 
-        }
-        else if( reco_events[i].GetPhysicalProcess() == 6 ){
+        else{
           ++other; 
         }
       }
@@ -385,7 +379,6 @@ namespace ana{
       std::cout << " RES : " << res << std::endl;
       std::cout << " DIS : " << dis << std::endl;
       std::cout << " COH : " << coh << std::endl;
-      std::cout << " 1pi : " << singlepi << std::endl;
       std::cout << " Oth : " << other << std::endl;
       
       // Take the bin edges to be the title
@@ -403,7 +396,6 @@ namespace ana{
       TH1D *h_T_muccres    = new TH1D ( "h_T_muccres",   "", x_bins, -1, 1 );
       TH1D *h_T_muccdis    = new TH1D ( "h_T_muccdis",   "", x_bins, -1, 1 );
       TH1D *h_T_mucccoh    = new TH1D ( "h_T_mucccoh",   "", x_bins, -1, 1 );
-      TH1D *h_T_mucc1pi    = new TH1D ( "h_T_mucc1pi",   "", x_bins, -1, 1 );
       TH1D *h_T_muccother  = new TH1D ( "h_T_muccother", "", x_bins, -1, 1 );
 
       // Cos histograms
@@ -417,7 +409,6 @@ namespace ana{
       TH1D *h_cos_muccres    = new TH1D ( "h_cos_muccres",    "", y_bins, 0.2, 2 );
       TH1D *h_cos_muccdis    = new TH1D ( "h_cos_muccdis",    "", y_bins, 0.2, 2 );
       TH1D *h_cos_mucccoh    = new TH1D ( "h_cos_mucccoh",    "", y_bins, 0.2, 2 );
-      TH1D *h_cos_mucc1pi    = new TH1D ( "h_cos_mucc1pi",    "", y_bins, 0.2, 2 );
       TH1D *h_cos_muccother  = new TH1D ( "h_cos_muccother",  "", y_bins, 0.2, 2 );
 
       std::vector< TH1D * > all_histograms;
@@ -426,7 +417,6 @@ namespace ana{
       all_histograms.push_back( h_T_muccres );
       all_histograms.push_back( h_T_muccdis );
       all_histograms.push_back( h_T_mucccoh );
-      all_histograms.push_back( h_T_mucc1pi );
       all_histograms.push_back( h_T_muccother );
 
       all_histograms.push_back( h_cos_muccqe );
@@ -434,7 +424,6 @@ namespace ana{
       all_histograms.push_back( h_cos_muccres );
       all_histograms.push_back( h_cos_muccdis );
       all_histograms.push_back( h_cos_mucccoh );
-      all_histograms.push_back( h_cos_mucc1pi );
       all_histograms.push_back( h_cos_muccother );
 
       // For any counters that don't = 0, initialise the histogram and legend entry
@@ -481,15 +470,6 @@ namespace ana{
           
           signal_h.push_back(h_T_mucccoh);
           signal_c_h.push_back(h_cos_mucccoh);
-
-      }
-      if( singlepi > 0 ){    
-          
-          leg_T->AddEntry( h_T_mucc1pi,    " #nu_{#mu} CC non-RES 1#pi ", "f" );
-          leg_cos->AddEntry( h_cos_mucc1pi,    " #nu_{#mu} CC non-RES 1#pi ", "f" );
-          
-          signal_h.push_back(h_T_mucc1pi);
-          signal_c_h.push_back(h_cos_mucc1pi);
 
       }
       if( other > 0 ){
@@ -553,7 +533,7 @@ namespace ana{
               int process = ev.GetPhysicalProcess();
               
               Particle p  = primary[k];
-              double cth  = p.GetAngle();
+              double cth  = p.GetCosTheta();
               double T    = p.GetKineticEnergy();
 
 
@@ -564,17 +544,17 @@ namespace ana{
                 && ev.GetIsCC() ){
                   
                   // CCQE
-                  if ( process == 0  ) {
+                  if ( process == 1  ) {
                       h_T_muccqe->Fill( cth,1 );
                   }
                   
                   // CCMEC
-                  else if ( process == 1 ){
+                  else if ( process == 10 ){
                       h_T_muccmec->Fill( cth, 1 );
                   }
                   
                   // CCRES
-                  else if ( process == 2 ){
+                  else if ( process == 4 ){
                       h_T_muccres->Fill( cth, 1 );
                   }
                   
@@ -584,17 +564,12 @@ namespace ana{
                   }
                   
                   // CCCOH
-                  else if ( process == 4 ){
+                  else if ( process == 5 ){
                       h_T_mucccoh->Fill( cth, 1 );
                   }
                   
-                  // CC non-RES, 1Pi
-                  else if ( process == 5 ){
-                      h_T_mucc1pi->Fill( cth, 1 );
-                  }
-                  
                   // CCOther
-                  else if ( process == 6 ){
+                  else{
                       h_T_muccother->Fill( cth, 1 );
                   }
               }    
@@ -633,7 +608,6 @@ namespace ana{
               signal_h[i]->SetFillColor(pal[i]);
               signal_h[i]->SetLineColor(pal[i]);
 
-              signal_h[i]->SetLineWidth(1.5);
               signal_h[i]->Scale(1/norm_T);
 
               hsT->Add(signal_h[i]);
@@ -720,7 +694,7 @@ namespace ana{
               int process = ev.GetPhysicalProcess();
               
               Particle p  = primary[k];
-              double cth  = p.GetAngle();
+              double cth  = p.GetCosTheta();
               double T    = p.GetKineticEnergy();
 
               // Muon neutrino in this bin
@@ -730,17 +704,17 @@ namespace ana{
                 && ev.GetIsCC() ){
                   
                   // CCQE
-                  if ( process == 0 ) {
+                  if ( process == 1 ) {
                       h_cos_muccqe->Fill( T, 1 );
                   }
                   
                   // CCMEC
-                  else if ( process == 1 ){
+                  else if ( process == 10 ){
                       h_cos_muccmec->Fill( T, 1 );
                   }
                   
                   // CCRES, 1Pi
-                  else if ( process == 2 ){
+                  else if ( process == 4 ){
                       h_cos_muccres->Fill( T, 1 );
                   }
                   // CCDIS
@@ -749,16 +723,12 @@ namespace ana{
                   }
                   
                   // CCCOH
-                  else if ( process == 4 ){
-                      h_cos_mucccoh->Fill( T, 1 );
-                  }
-                  // CC non-RES, 1Pi
                   else if ( process == 5 ){
-                      h_cos_mucc1pi->Fill( T, 1 );
+                      h_cos_mucccoh->Fill( T, 1 );
                   }
                   
                   // CCOther
-                  else if( process == 6 ){
+                  else{
                       h_cos_muccother->Fill( T, 1 );
                   }
               }   
@@ -795,7 +765,6 @@ namespace ana{
               signal_c_h[i]->SetFillColor(pal[i]);
               signal_c_h[i]->SetLineColor(pal[i]);
 
-              signal_c_h[i]->SetLineWidth(1.5);
               signal_c_h[i]->Scale(1/norm_cos);
 
               hscos->Add(signal_c_h[i]);

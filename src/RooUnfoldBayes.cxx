@@ -1,6 +1,6 @@
 //=====================================================================-*-C++-*-
 // File and Version Information:
-//      $Id$
+//      $Id: RooUnfoldBayes.cxx 335 2012-06-08 18:18:04Z T.J.Adye $
 //
 // Description:
 //      Bayesian unfolding.

@@ -13,5 +13,5 @@ gROOT->ProcessLine(".L srcs/EventSelectionTool.cpp+");
 gROOT->ProcessLine(".L srcs/GeneralAnalysisHelper.cpp+");
 gROOT->ProcessLine(".L srcs/CC0piAnalysisHelper.cpp+");
 gROOT->ProcessLine(".L srcs/CC1piAnalysisHelper.cpp+");
-gROOT->ProcessLine(".L test/ToolMain.cpp+");
+gROOT->ProcessLine(".L test/FullPerformanceMain.cpp+");
 }

@@ -1,5 +1,52 @@
-History of RooUnfold     $Id$
+History of RooUnfold     $Id: History 359 2018-02-15 17:07:26Z T.J.Adye@rl.ac.uk $
 ====================
+
+Tim Adye         15-Feb-2018
+  o Always use local version of TSVDUnfold, unless explicitly disabled with
+    "make HAVE_TSVDUNFOLD=0". Previously TSVDUnfold_local.h was not included
+    for ROOT6, which gave problems with RooUnfoldSvd::Impl().
+    Problem reported by Yaxian Mao (ALICE).
+  o Fix double delete in RooUnfoldTest.cxx etc (actually examples/ArgVars.h)
+    for ROOT 6.12.
+
+Tim Adye         10-Nov-2017
+  o Apply small fixes from ROOT 6.10 to local copy of TSVDUnfold.cxx.
+  o Use "nosw2" option for TH1::Scale() in RooUnfoldTest to stop errors
+    being added in ROOT 6.08.
+
+Tim Adye         24-Aug-2017
+  o Add #include "TBuffer.h" required since ROOT 6.08, also for RooUnfoldIds.cxx.
+  o Move unneeded include from RooUnfoldIds.h to .cxx.
+  o Link -lUnfold (for TUnfold) if available (moved out of -lHist with ROOT 6.10).
+    Bugs reported by Salvatore Rappoccio.
+
+Tim Adye         18-Jul-2017
+  o Add description of RooUnfoldIds to RooUnfold.cxx.
+  o Fix error propagation using toys in RooUnfoldIds.cxx.
+    Changes kindly provided by Chris Meyer.
+
+Tim Adye         11-Jul-2017
+  o Add IDS (iterative dynamically stabilized) unfolding implemented
+    in the RooUnfoldIds class by Chris Meyer <chris.meyer@cern.ch> using
+    the algorithm from Bogdan Malaescu <bogdan.malaescu@cern.ch>.
+    The implementation is still under development, but mostly works.
+    RooUnfoldIds's error propagation (with toys) seems to have problems,
+    but RooUnfold's toy generation (kCovToy) can be used instead.
+
+Tim Adye         10-Feb-2017
+  o Add #include "TBuffer.h" required since ROOT 6.08.
+  o Fix RooUnfoldTest overflow=1 or 2 when nmx!=ntx.
+
+Tim Adye         14-Apr-2015
+  o Make sure RooUnfoldDict_rdict.pcm is in same directory as libRooUnfold.so.
+  o Update "make commands".
+
+Tim Adye         13-Apr-2015
+  More GNUmakefile fixes for ROOT6:
+  o Use rootcling (instead of rlibmap) to make libRooUnfold.rootmap.
+  o Include $(CXXFLAGS) (notably -std=c++11) in dependency file creation.
+  o Fallback if dependency file creation fails.
+  o Fallback if no Makefile.arch, also for ROOT installed in default location.
 
 Tim Adye          7-Oct-2014
   o Fix GNUmakefile for old ROOT (5.30 and before) which defined ROOTCONFIG

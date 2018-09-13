@@ -42,6 +42,8 @@ namespace ana{
        */
       static float GetRecoCC0piNeutrinoEnergy(const Event &e);
 
+      
+
     private : 
       
       /**
@@ -52,5 +54,5 @@ namespace ana{
 
 
   }; // CC0piAnalysisHelper
-} // namespace: selection
+} // namespace: ana
 #endif

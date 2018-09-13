@@ -1,6 +1,6 @@
 //=====================================================================-*-C++-*-
 // File and Version Information:
-//      $Id$
+//      $Id: RooUnfoldBinByBin.cxx 296 2011-09-30 00:46:54Z T.J.Adye $
 //
 // Description:
 //      Unfolding class using the bin by bin method of conversion factors. 

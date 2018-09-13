@@ -1,6 +1,6 @@
 //=====================================================================-*-C++-*-
 // File and Version Information:
-//      $Id$
+//      $Id: RooUnfoldSvd.cxx 358 2018-02-15 16:17:50Z T.J.Adye@rl.ac.uk $
 //
 // Description:
 //      SVD unfolding. Just an interface to TSVDUnfold.
@@ -27,20 +27,17 @@ END_HTML */
 
 #include "TClass.h"
 #include "TNamed.h"
+#include "TBuffer.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TVectorD.h"
 #include "TMatrixD.h"
-#if defined(HAVE_TSVDUNFOLD) || ROOT_VERSION_CODE < ROOT_VERSION(5,34,99)
-#include "TSVDUnfold_local.h"  /* Use local copy of TSVDUnfold.h */
-#else
-#include "TSVDUnfold.h"
-#if ROOT_VERSION_CODE < ROOT_VERSION(5,34,0)
-#define TSVDUNFOLD_LEAK 1
-#endif
-#endif
 
 #include "RooUnfoldResponse.h"
+
+#if (defined(HAVE_TSVDUNFOLD) && !HAVE_TSVDUNFOLD) && ROOT_VERSION_CODE < ROOT_VERSION(5,34,0)
+#define TSVDUNFOLD_LEAK 1
+#endif
 
 using std::cout;
 using std::cerr;

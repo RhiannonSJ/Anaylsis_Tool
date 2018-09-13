@@ -108,9 +108,29 @@ namespace ana{
       typedef std::vector<Event>    EventList;
 
       /**
+       * @brief  Get NuMu topology map
+       */
+      static TopologyMap GetNuMuTopologyMap();
+
+      /**
        * @brief  Get NC topology map
        */
       static TopologyMap GetNCTopologyMap();
+
+      /**
+       * @brief  Get NC 0Pi topology map
+       */
+      static TopologyMap GetNC0PiTopologyMap();
+
+      /**
+       * @brief  Get NC 1Pi topology map
+       */
+      static TopologyMap GetNC1PiTopologyMap();
+
+      /**
+       * @brief  Get NC 2Pi topology map
+       */
+      static TopologyMap GetNC2PiTopologyMap();
 
       /**
        * @brief  Get CC inclusive topology map
@@ -123,15 +143,43 @@ namespace ana{
       static TopologyMap GetCC0PiTopologyMap();
 
       /**
+       * @brief  Get CC 0Pi 2Protons topology map
+       */
+      static TopologyMap GetCC0Pi2PTopologyMap();
+
+      /**
        * @brief  Get CC 1Pi topology map
        */
       static TopologyMap GetCC1PiTopologyMap();
+
+      /**
+       * @brief  Get CC 2Pi topology map
+       */
+      static TopologyMap GetCC2PiTopologyMap();
 
       /**
        * @brief  Get CC 1Pi0 topology map
        */
       static TopologyMap GetCCPi0TopologyMap();
 
+      /**
+       * @brief  Get the number of escaping reconstructed tracks or MCParticles
+       *
+       * @param  e Current event
+       *
+       * @return Number of escaping reconstructed tracks or MCParticles
+       */
+      static unsigned int NumberEscapingTracks(const Event &e);
+      
+      /**
+       * @brief  Finds if there is more than one escaping track in an event
+       *
+       * @param  e Current event
+       *
+       * @return True if there is a maximum of one, false if there are more than one
+       */
+      static bool MaxOneEscapingTrack(const Event &e);
+      
       /**                                                              
        * @brief  Gives the number of MC, Reco and Coincidences for a given topology                                                           
        *
@@ -507,6 +555,18 @@ namespace ana{
        */
       static int ParticleHasAMatch(const Event &e, const Particle &p);
 
+      /**
+       * @brief  Find out if an MC particle has a corresponding reconstructed particle
+       *
+       * @param  event
+       * @param  mc particle
+       *
+       * @return true or false: true == has reconstructed particle, false == hasn't
+       *
+       */
+      static bool HasBeenReconstructed(const Event &e, const Particle &p);
+      
+
   }; // GeneralAnalysisHelper
-} // namespace: selection
+} // namespace: ana
 #endif

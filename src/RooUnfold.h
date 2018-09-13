@@ -1,6 +1,6 @@
 //=====================================================================-*-C++-*-
 // File and Version Information:
-//      $Id$
+//      $Id: RooUnfold.h 354 2017-07-11 17:49:50Z T.J.Adye@rl.ac.uk $
 //
 // Description:
 //      Unfolding framework base class.
@@ -31,7 +31,8 @@ public:
     kBinByBin,           //   RooUnfoldBinByBin
     kTUnfold,            //   RooUnfoldTUnfold
     kInvert,             //   RooUnfoldInvert
-    kDagostini           //   RooUnfoldDagostini
+    kDagostini,          //   RooUnfoldDagostini
+    kIDS                 //   RooUnfoldIds
   };
 
   enum ErrorTreatment {  // Error treatment:
@@ -79,10 +80,6 @@ public:
   const    TVectorD& Vmeasured() const;   // Measured distribution as a TVectorD
   const    TVectorD& Emeasured() const;   // Measured distribution errors as a TVectorD
   const    TMatrixD& GetMeasuredCov() const;   // Measured distribution covariance matrix
-
-  // Methods for unfolding tests
-  virtual TH1* HrecoMeasured();
-  Double_t Chi2measured();
 
   virtual TVectorD&  Vreco();
   virtual TMatrixD   Ereco  (ErrorTreatment witherror=kCovariance);
@@ -174,7 +171,7 @@ protected:
 
 public:
 
-  ClassDef (RooUnfold, 2) // Unfolding base class: implementations in RooUnfoldBayes, RooUnfoldSvd, RooUnfoldBinByBin, RooUnfoldTUnfold, and RooUnfoldInvert
+  ClassDef (RooUnfold, 2) // Unfolding base class: implementations in RooUnfoldBayes, RooUnfoldSvd, RooUnfoldBinByBin, RooUnfoldTUnfold, RooUnfoldInvert, RooUnfoldIds
 };
 
 //==============================================================================

@@ -1,6 +1,6 @@
 //=====================================================================-*-C++-*-
 // File and Version Information:
-//      $Id$
+//      $Id: RooUnfoldExample.cxx 354 2017-07-11 17:49:50Z T.J.Adye@rl.ac.uk $
 //
 // Description:
 //      Simple example usage of the RooUnfold package using toy MC.
@@ -17,10 +17,11 @@ using std::endl;
 #include "TRandom.h"
 #include "TH1D.h"
 
-#include "../src/RooUnfoldResponse.h"
-#include "../src/RooUnfoldBayes.h"
+#include "RooUnfoldResponse.h"
+#include "RooUnfoldBayes.h"
 //#include "RooUnfoldSvd.h"
 //#include "RooUnfoldTUnfold.h"
+//#include "RooUnfoldIds.h"
 #endif
 
 //==============================================================================
@@ -74,7 +75,8 @@ void RooUnfoldExample()
   cout << "==================================== UNFOLD ===================================" << endl;
   RooUnfoldBayes   unfold (&response, hMeas, 4);    // OR
 //RooUnfoldSvd     unfold (&response, hMeas, 20);   // OR
-//RooUnfoldTUnfold unfold (&response, hMeas);
+//RooUnfoldTUnfold unfold (&response, hMeas);       // OR
+//RooUnfoldIds     unfold (&response, hMeas, 1);
 
   TH1D* hReco= (TH1D*) unfold.Hreco();
 

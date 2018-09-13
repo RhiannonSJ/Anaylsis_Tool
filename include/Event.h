@@ -31,12 +31,14 @@ namespace ana{
        *
        * @param  mc_particles list of the MC particle objects in the event
        * @param  reco_particles list of the reconstructed particle objects in the event
-       * @param  nuance the nuance code corresponding to the event
+       * @param  interaction the interaction type corresponding to the event
        * @param  is_cc is this a charged or neutral current event
        * @param  mc_vertex Monte Carlo neutrino vertex 
        * @param  reco_vertex reconstructed neutrino vertex
+       * @param  file the file number the event was from
+       * @param  id the id of the event
        */
-      Event(const ParticleList &mc_particles, const ParticleList &reco_particles, const unsigned int nuance, const int neutrino_pdg, const unsigned int charged_pi, const unsigned int neutral_pi, const bool is_cc, const TVector3 &mc_vertex, const TVector3 &reco_vertex, const float neutrino_energy);
+      Event(const ParticleList &mc_particles, const ParticleList &reco_particles, const unsigned int interaction, const unsigned int scatter, const int neutrino_pdg, const unsigned int charged_pi, const unsigned int neutral_pi, const bool is_cc, const TVector3 &mc_vertex, const TVector3 &reco_vertex, const float neutrino_energy, const int &file, const int &id);
 
       /**
        * @brief  CountMCParticlesWithPdg
@@ -85,10 +87,50 @@ namespace ana{
       ParticleList GetRecoParticleList() const;
       
       /**
-       * @brief  Get the nuance code - interaction of the event
+       * @brief  Get the file id the current event came from
        */
-      int GetNuanceCode() const;
+      int GetFileId() const;
 
+      /**
+       * @brief  Get the id of the current event
+       */
+      int GetId() const;
+
+      /**
+       * @brief  Get the interaction type of the event \n
+       * <tt>
+       * 0 : Unknown \n
+       * 1 : Weak CC \n
+       * 2 : Weak NC \n
+       * 3 : Weak CC + NC + Interference \n
+       * 4 : Nucleon decay \n
+       * </tt>
+       */
+      int GetInteractionType() const;
+
+      /**
+       * @brief  Get the scattering code of the event: the physical process \n
+       *  <tt>
+       * 0  : Unknown \n
+       * 1  : QE \n
+       * 2  : Single kaon \n
+       * 3  : DIS \n
+       * 4  : Resonant \n
+       * 5  : Coherent \n
+       * 6  : Diffractive \n
+       * 7  : \f$ \nu \f$- e elastic \n
+       * 8  : Inverse \f$ \mu \f$ decay \n
+       * 9  : AM \f$ \nu - \gamma \f$ \n
+       * 10 : MEC \n
+       * 11 : Coherent elastic \n
+       * 12 : Inverse \f$ \beta \f$ decay \n
+       * 13 : Glashow resonance \n
+       * 14 : IMD Annihilation \n
+       * </tt>
+       *
+       */
+      int GetPhysicalProcess() const;
+      
       /**
        * @brief  Get the neutrino pdg code in the event
        */
@@ -111,9 +153,9 @@ namespace ana{
       bool IsSBNDTrueFiducial() const;
       
       /**
-       * @brief  Get the physical process
+       * @brief  Get whether all the reconstructed tracks in an event are contained
        */
-      int GetPhysicalProcess() const;
+      bool AllContained() const;
       
       /**
        * @brief  Get if the event is CC or NC
@@ -149,6 +191,20 @@ namespace ana{
        */
       Particle GetMostEnergeticTrueParticle() const;
 
+      /**
+       * @brief  Get the minimum x,y,z positions of the SBND fiducial volume
+       *
+       * @return Vector of lowest x,y,z positions
+       */
+      TVector3 GetMinimumFiducialDimensions() const;
+
+      /**
+       * @brief  Get the maximum x,y,z positions of the SBND fiducial volume
+       *
+       * @return Vector of highest x,y,z positions
+       */
+      TVector3 GetMaximumFiducialDimensions() const;
+
     private : 
 
       /**
@@ -179,7 +235,8 @@ namespace ana{
       // Member variables
       ParticleList       m_mc_particles;       ///< vector of Monte Carlo particles
       ParticleList       m_reco_particles;     ///< vector of reconstructed particles
-      unsigned int       m_nuance;             ///< Nuance code/interaction of the event
+      unsigned int       m_interaction;        ///< interaction type of the event
+      unsigned int       m_scatter;            ///< scatter code for the event: physical process
       int                m_nu_pdg;             ///< Neutrino pdg code of the event
       unsigned int       m_charged_pi;         ///< Number of charged pions in the event
       unsigned int       m_neutral_pi;         ///< Number of neutral pions in the event
@@ -187,6 +244,8 @@ namespace ana{
       TVector3           m_reco_vertex;        ///< reconstructed neutrino vertex
       TVector3           m_mc_vertex;          ///< reconstructed neutrino vertex
       float              m_neutrino_energy;    ///< true neutrino energy
+      int                m_file;               ///< file id
+      int                m_id;                 ///< event id
       float              m_sbnd_border_x;      ///< fiducial border in x for the sbnd detector
       float              m_sbnd_border_y;      ///< fiducial border in y for the sbnd detector
       float              m_sbnd_border_z;      ///< fiducial border in z for the sbnd detector
@@ -199,6 +258,6 @@ namespace ana{
                                                                                
 
   }; // Event
-} // selection
+} // ana
 
 #endif

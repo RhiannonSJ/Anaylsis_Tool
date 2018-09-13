@@ -1,6 +1,6 @@
 //=====================================================================-*-C++-*-
 // File and Version Information:
-//      $Id$
+//      $Id: RooUnfold.cxx 355 2017-07-18 15:43:03Z T.J.Adye@rl.ac.uk $
 //
 // Description:
 //      Unfolding framework base class.
@@ -35,6 +35,16 @@
 <li>True and measured distributions must have the same binning
 <li>Can account for both smearing and biasing
 <li>Returns near singular covariance matrices, again leading to very large chi squared values
+</ul>
+<li> RooUnfoldIds: Uses the Bayes method of unfolding based on the method written by Malaescu (<a href="http://arxiv.org/abs/1106.3107">CERN-PH-EP-2011-111</a>)
+<ul>
+<li>Set the number of iterations used to improve the folding matrix
+<li>Regularisation parameters define the level at which values are deemed to be due to statistical fluctuations. Used for modifying the folding matrix, as well as unfolding.
+<li>Returns errors as a full matrix of covariances
+<li>Error processing is much the same as with the kCovToy setting with 1000 toys. This is quite slow but can be switched off.
+<li>Can handle 2 dimensional distributions
+<li>True and measured distributions must have the same binning
+<li>Can account for both smearing and biasing
 </ul>
 <li> RooUnfoldBinByBin: Unfolds using the method of correction factors.
 <ul>
@@ -73,6 +83,7 @@ END_HTML */
 #include "TClass.h"
 #include "TMatrixD.h"
 #include "TNamed.h"
+#include "TBuffer.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"
@@ -95,6 +106,7 @@ END_HTML */
 #ifdef HAVE_DAGOSTINI
 #include "RooUnfoldDagostini.h"
 #endif
+#include "RooUnfoldIds.h"
 
 using std::vector;
 using std::cout;
@@ -121,12 +133,13 @@ RooUnfold* RooUnfold::New (Algorithm alg, const RooUnfoldResponse* res, const TH
                            const char* name, const char* title)
 {
     /*Unfolds according to the value of the alg enum:
-    0: a dummy unfold
-    1: Unfold via a Bayes method
-    2: Unfold using singlar value decomposition
-    3: Unfold bin by bin.
-    4: Unfold with TUnfold
-    5: Unfold using inversion of response matrix
+    0 = kNone:     dummy unfolding
+    1 = kBayes:    Unfold via iterative application of Bayes theorem
+    2 = kSVD:      Unfold using singlar value decomposition (SVD)
+    3 = kBinByBin: Unfold bin by bin.
+    4 = kTUnfold:  Unfold with TUnfold
+    5 = kInvert:   Unfold using inversion of response matrix
+    7 = kIDS:      Unfold using iterative dynamically stabilized (IDS) method
     */
   RooUnfold* unfold;
   switch (alg) {
@@ -161,6 +174,9 @@ RooUnfold* RooUnfold::New (Algorithm alg, const RooUnfoldResponse* res, const TH
       cerr << "RooUnfoldDagostini is not available" << endl;
       return 0;
 #endif
+    case kIDS:
+      unfold= new RooUnfoldIds      (res, meas);
+      break;
     default:
       cerr << "Unknown RooUnfold method " << Int_t(alg) << endl;
       return 0;
@@ -492,19 +508,6 @@ Double_t RooUnfold::Chi2(const TH1* hTrue,ErrorTreatment DoChi2)
 }
 
 
-Double_t RooUnfold::Chi2measured() {
-  TVectorD vReco= Vreco();
-  TMatrixD A= _res->Mresponse();
-  TVectorD yreco= A*vReco;
-  TVectorD ymeasured= Vmeasured();
-  TVectorD delta= ymeasured - yreco;
-  TMatrixD Vinv= GetMeasuredCov();
-  InvertMatrix( Vinv, Vinv );
-  Double_t chisq= Vinv.Similarity( delta );
-  return chisq;
-}
-
-
 void RooUnfold::PrintTable (std::ostream& o, const TH1* hTrue, ErrorTreatment withError)
 {
   // Prints entries from truth, measured, and reconstructed data for each bin.
@@ -700,22 +703,6 @@ TH1* RooUnfold::Hreco (ErrorTreatment withError)
 
   return reco;
 }
-
-
-TH1* RooUnfold::HrecoMeasured() {
-  TH1* hist= (TH1*) _meas->Clone( GetName() );
-  hist->Reset();
-  hist->SetTitle( GetTitle() );
-  TVectorD reco= Vreco();
-  TMatrixD A= _res->Mresponse();
-  TVectorD yreco= A*reco;
-  for( Int_t i= 0; i < _nm; i++ ) {
-    Int_t j= RooUnfoldResponse::GetBin( hist, i, _overflow );
-    hist->SetBinContent( j, yreco(i) );
-  }
-  return hist;
-}
-
 
 void RooUnfold::GetSettings()
 {

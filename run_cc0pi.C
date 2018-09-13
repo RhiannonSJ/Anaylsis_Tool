@@ -2,6 +2,7 @@
 gROOT->ProcessLine(".L srcs/Particle.cpp+");
 gROOT->ProcessLine(".L srcs/Event.cpp+");
 gROOT->ProcessLine(".L srcs/EventSelectionTool.cpp+");
+gROOT->ProcessLine(".L srcs/GeneralAnalysisHelper.cpp+");
 gROOT->ProcessLine(".L srcs/CovFunc.cpp+");
 gROOT->ProcessLine(".L srcs/UnfoldingFunctions.cpp+");
 gROOT->ProcessLine(".L srcs/CrossSection.cpp+");
